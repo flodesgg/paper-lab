@@ -56,5 +56,22 @@ def test_cli_check_config(
 
 def test_secrets_and_cache_are_gitignored() -> None:
     ignored = (REPO / ".gitignore").read_text().splitlines()
-    for entry in (".env", "data/", "logs/"):
+    for entry in (".env", "/data/*", "/logs/", "!/data/calendar/"):
         assert entry in ignored
+
+
+def test_no_source_or_test_file_is_gitignored() -> None:
+    """Regression: an unanchored `data/` rule once ignored src/paper_lab/data/ (the whole
+    data layer was missing from the Stage A commit)."""
+    import subprocess
+
+    files = [
+        str(p.relative_to(REPO))
+        for d in ("src", "tests", "docs")
+        for p in (REPO / d).rglob("*")
+        if p.is_file() and "__pycache__" not in p.parts
+    ]
+    out = subprocess.run(
+        ["git", "check-ignore", "--no-index", *files], cwd=REPO, capture_output=True, text=True
+    )
+    assert out.stdout.strip() == "", f"ignored by .gitignore: {out.stdout}"

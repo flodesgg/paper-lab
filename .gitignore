@@ -4,9 +4,10 @@
 !.env.example
 
 # working data cache and logs (raw data is archived in data_archive/)
-data/
-logs/
-data_archive/.lock
+/data/*
+!/data/calendar/
+/logs/
+/data_archive/.lock
 
 # python / tooling
 .venv/
