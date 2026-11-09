@@ -52,18 +52,59 @@ class LoggingConfig(_Strict):
     backup_count: int = Field(ge=0)
 
 
+class HoursConfig(_Strict):
+    """Trading hours in America/New_York. end < start means the window wraps midnight."""
+
+    start: time
+    end: time
+
+
 class InstrumentConfig(_Strict):
     symbol: str
     role: Literal["primary", "cross_check"]
     description: str
     contract_multiplier: float = Field(gt=0)
     price_unit: str
+    prepost: bool
+    data_delay_min: int = Field(ge=0, le=60)  # bars younger than this are not final
+    trading_hours: HoursConfig
+
+    @property
+    def file_stem(self) -> str:
+        """Filesystem-safe symbol, e.g. 'GC=F' -> 'GC_F'."""
+        return "".join(c if c.isalnum() else "_" for c in self.symbol)
+
+
+class IntervalLimit(_Strict):
+    lookback_days: int = Field(gt=0)
+    chunk_days: int = Field(gt=0)
 
 
 class DataConfig(_Strict):
     source: Literal["yfinance"]
     archive_intervals: list[Interval] = Field(min_length=1)
     storage_format: Literal["parquet", "csv"]
+    limits: dict[Interval, IntervalLimit]
+    update_overlap_days: int = Field(ge=0)
+    incomplete_bar_grace_sec: int = Field(ge=0)
+    request_pause_sec: float = Field(ge=0)
+    max_retries: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def _limits_for_every_interval(self) -> DataConfig:
+        missing = [i for i in self.archive_intervals if i not in self.limits]
+        if missing:
+            raise ValueError(f"data.limits missing for intervals: {missing}")
+        for name, lim in self.limits.items():
+            if lim.chunk_days > lim.lookback_days:
+                raise ValueError(f"data.limits.{name}: chunk_days > lookback_days")
+        return self
+
+
+class ValidationConfig(_Strict):
+    atr_window: int = Field(ge=2)
+    absurd_range_atr_mult: float = Field(gt=1)
+    gap_check_max_interval_min: int = Field(ge=1)
 
 
 class SessionConfig(_Strict):
@@ -105,6 +146,7 @@ class Config(_Strict):
     logging: LoggingConfig
     instruments: list[InstrumentConfig] = Field(min_length=1)
     data: DataConfig
+    validation: ValidationConfig
     session: SessionConfig
     risk: RiskConfig
 
@@ -117,6 +159,12 @@ class Config(_Strict):
         if len(set(symbols)) != len(symbols):
             raise ValueError("instrument symbols must be unique")
         return self
+
+    def instrument(self, symbol: str) -> InstrumentConfig:
+        for i in self.instruments:
+            if i.symbol == symbol:
+                return i
+        raise KeyError(f"unknown instrument {symbol!r}")
 
 
 def config_hash(raw: dict[str, object]) -> str:

@@ -27,16 +27,37 @@ instruments:
     description: COMEX gold futures, continuous front month (yfinance)
     contract_multiplier: 100   # USD per 1.00 move = 100 oz per contract
     price_unit: USD/oz
+    prepost: false             # irrelevant for futures (Yahoo returns the full Globex day)
+    data_delay_min: 20         # COMEX on Yahoo is ~10 min delayed; recent volume also gets revised
+    trading_hours: {start: "18:00", end: "17:00"}   # ET, wraps midnight; 17:00-18:00 = daily break
   - symbol: GLD
     role: cross_check
     description: SPDR Gold Shares ETF (yfinance)
     contract_multiplier: 1     # one share
     price_unit: USD/share
+    prepost: false             # regular hours only; pre/post bars are mostly zero-volume
+    data_delay_min: 20         # live GLD volume is re-attributed between bars for ~15 min
+    trading_hours: {start: "09:30", end: "16:00"}
 
 data:
   source: yfinance
   archive_intervals: ["1m", "5m", "1h"]
   storage_format: parquet      # falls back to csv if pyarrow is unavailable
+  # Yahoo limits observed on 2026-11-09 (docs/data_notes.md). lookback stays one day
+  # inside the hard limit; chunk_days respects the per-request cap (1m: 8 days).
+  limits:
+    1m: {lookback_days: 29, chunk_days: 7}
+    5m: {lookback_days: 59, chunk_days: 30}
+    1h: {lookback_days: 729, chunk_days: 180}
+  update_overlap_days: 3       # re-fetch this much before the last archived bar
+  incomplete_bar_grace_sec: 120  # drop bars that ended less than this before the fetch
+  request_pause_sec: 1.0
+  max_retries: 3
+
+validation:
+  atr_window: 20               # bars, for the "absurd candle" check
+  absurd_range_atr_mult: 8.0   # range > mult x ATR is flagged
+  gap_check_max_interval_min: 30   # in-session gap check only for bars <= 30 min
 
 session:
   timezone: America/New_York
