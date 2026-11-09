@@ -1,0 +1,10 @@
+{
+  "run_id": "20261109T173447Z-2e5728",
+  "started_utc": "2026-11-09T17:34:47+00:00",
+  "git_commit": "a325684afb18",
+  "git_dirty": false,
+  "config_hash": "6e32d457116c",
+  "data_hash": "1d24e66fd368",
+  "experiment": "EXP-000",
+  "decision": "INCONCLUSIVE"
+}
