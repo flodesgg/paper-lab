@@ -83,3 +83,36 @@ news_guard:
   open_guard_min: 30           # no new entries in the first N session minutes after a morning release
   morning_events: [CPI, NFP]   # released 08:30 ET, before the 09:30 open
   in_session_window_min: 15    # +/- window for an event released during the session (none today)
+
+# Setups: one module each in src/paper_lab/setups/. Params are validated by each setup's own
+# schema. Defaults were fixed on 2026-11-09 WITHOUT looking at results (docs/decisions.md);
+# any change must reference a pre-registered experiment (EXP-NNN) in the commit message.
+setups:
+  orb:
+    enabled: true
+    interval: 5m
+    params:
+      or_minutes: 15             # opening range = first N session minutes
+      k: 2.0                     # target = k x risk (risk measured from the actual fill)
+      stop_fraction: 1.0         # 1.0 = stop at the opposite side of the range
+      min_range_atr: 0.10        # skip days whose range / ATR(14 daily) is below this ...
+      max_range_atr: 0.60        # ... or above this (both inclusive bounds)
+      atr_days: 14
+      volume_mult: 1.2           # breakout bar volume >= mult x same-time average; 0 = off
+      volume_lookback_sessions: 10
+      volume_min_sessions: 5     # fewer prior samples -> no signal (fail safe)
+      last_entry: "11:30"        # ET; no new signals after this bar close
+      max_signals_per_day: 1
+  momentum:
+    enabled: false               # disabled until an experiment for it is approved
+    interval: 5m
+    params:
+      first_window_minutes: 60   # "first hour"
+      move_pct: 0.40             # |close - open| / open over the first hour, in %
+      anchor: vwap               # vwap | ema
+      ema_length: 20
+      k: 2.0
+      stop_buffer_atr: 0.0       # extra distance beyond the pullback extreme, in daily ATR
+      atr_days: 14
+      last_entry: "11:30"
+      max_signals_per_day: 1

@@ -5,6 +5,8 @@ Commands
   fetch --update       fetch new bars, append to data_archive/, rebuild manifest + cache
   fetch --backfill     same, but request the provider's full lookback window
   validate             data-quality report into reports/ (exit 1 if any error)
+  calendar             validate the event calendar, show upcoming events
+  signals              run enabled setups over the archive -> reports/signals/ (no P&L)
 """
 
 from __future__ import annotations
@@ -29,6 +31,8 @@ from paper_lab.data.fetch import BarSource, YFinanceSource, run_update
 from paper_lab.data.validate import overall_status, validate_series, write_reports
 from paper_lab.logging_setup import setup_logging
 from paper_lab.runinfo import RunInfo, new_run_info
+from paper_lab.setups.registry import build_all
+from paper_lab.setups.runner import results_to_frames, run_setup, session_days
 
 
 def _source_factory() -> BarSource:
@@ -46,7 +50,8 @@ def _start(args: argparse.Namespace) -> tuple[Config, RunInfo]:
 
 
 def _cmd_check_config(args: argparse.Namespace) -> int:
-    _, info = _start(args)
+    cfg, info = _start(args)
+    build_all(cfg, enabled_only=False)  # every setup's params must validate too
     print(json.dumps(info.as_dict(), indent=2))
     return 0
 
@@ -140,6 +145,94 @@ def _cmd_calendar(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_signals(args: argparse.Namespace) -> int:
+    """Signals only. Trade outcomes are deliberately NOT computed here: results are produced
+    only by a pre-registered experiment (Stage E)."""
+    cfg, info = _start(args)
+    log = logging.getLogger("paper_lab")
+    enabled = build_all(cfg)
+    names = args.setups or sorted(enabled)
+    for n in names:
+        if n not in cfg.setups:
+            print(f"unknown setup {n!r}; configured: {sorted(cfg.setups)}", file=sys.stderr)
+            return 2
+        if n not in enabled:
+            print(
+                f"setup {n!r} is disabled in config.yaml; it is enabled only through an "
+                "approved experiment",
+                file=sys.stderr,
+            )
+            return 2
+    symbols = args.symbols or [i.symbol for i in cfg.instruments]
+    guard = None
+    if args.guard == "config" and cfg.news_guard.mode != "off":
+        guard = NewsGuard(cfg.news_guard, cfg.session, load_events(cfg.calendar.events_files))
+    out_dir = cfg.paths.reports / "signals"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stamp = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
+    meta: dict[str, object] = info.as_dict() | {
+        "guard": "config" if guard is not None else "off",
+        "runs": [],
+    }
+    for n in names:
+        setup = enabled[n]
+        for sym in symbols:
+            inst = cfg.instrument(sym)
+            bars = load_archive(cfg.paths.data_archive, inst.file_stem, setup.interval)
+            bars_1h = load_archive(cfg.paths.data_archive, inst.file_stem, "1h")
+            days, incomplete = session_days(bars, cfg.session, setup.interval)
+            results = run_setup(
+                setup,
+                instrument=inst,
+                session=cfg.session,
+                bars=bars,
+                bars_1h=bars_1h,
+                days=days,
+                guard=guard,
+            )
+            sig, per_day = results_to_frames(results)
+            tag = "" if guard is not None else "_noguard"
+            base = out_dir / f"{n}_{inst.file_stem}{tag}_{stamp}"
+            sig.to_csv(f"{base}_signals.csv", index=False)
+            per_day.to_csv(f"{base}_days.csv", index=False)
+            status = Counter(r.status for r in results)
+            reasons = Counter(r.reason.split(":")[0] for r in results if r.status == "skipped")
+            n_sig = sum(len(r.signals) for r in results)
+            n_blk = sum(len(r.blocked) for r in results)
+            n_rej = sum(len(r.rejected) for r in results)
+            span = f"{days[0]}..{days[-1]}" if days else "no data"
+            line = (
+                f"{n} {sym} {setup.interval} {span}: days={len(days)} "
+                f"scanned={status['scanned']} skipped={status['skipped']} "
+                f"closed={status['closed']} signals={n_sig} guard_blocked={n_blk} "
+                f"filter_rejected_bars={n_rej}"
+            )
+            print(line)
+            if incomplete:
+                print(
+                    f"    left out, data ends before session close: {[str(d) for d in incomplete]}"
+                )
+            for reason, k in reasons.most_common():
+                print(f"    skipped {k:3d}x  {reason}")
+            print(f"    -> {base}_signals.csv, {base}_days.csv")
+            log.info("signals %s", line)
+            runs = meta["runs"]
+            assert isinstance(runs, list)
+            runs.append(
+                {
+                    "setup": n,
+                    "symbol": sym,
+                    "params": cfg.setups[n].params,
+                    "days": len(days),
+                    "signals": n_sig,
+                    "files": [f"{base}_signals.csv", f"{base}_days.csv"],
+                }
+            )
+    tag = "" if guard is not None else "_noguard"
+    (out_dir / f"run{tag}_{stamp}.json").write_text(json.dumps(meta, indent=2, default=str))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="paper-lab", description="Paper trading research lab")
     p.add_argument("--version", action="version", version=f"paper-lab {__version__}")
@@ -155,6 +248,15 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("validate", help="write a data-quality report (exit 1 on errors)")
     c = sub.add_parser("calendar", help="validate the event calendar and show upcoming events")
     c.add_argument("--upcoming", type=int, default=8)
+    s = sub.add_parser("signals", help="run enabled setups over the archive (signals only)")
+    s.add_argument("--setups", nargs="+", help="subset of enabled setups")
+    s.add_argument("--symbols", nargs="+", help="subset of configured symbols")
+    s.add_argument(
+        "--guard",
+        choices=["config", "off"],
+        default="config",
+        help="news guard as configured or off",
+    )
     return p
 
 
@@ -165,6 +267,7 @@ def main(argv: list[str] | None = None) -> int:
         "fetch": _cmd_fetch,
         "validate": _cmd_validate,
         "calendar": _cmd_calendar,
+        "signals": _cmd_signals,
     }
     return handlers[args.command](args)
 

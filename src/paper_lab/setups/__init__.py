@@ -1,1 +1,1 @@
-"""setups package (implemented in a later stage)."""
+"""Trading setups: one module per setup, discovered by registry.py."""

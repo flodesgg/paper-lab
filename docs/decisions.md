@@ -41,3 +41,28 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   after today, which made results depend on the run date (Dec 2027 events failed).
 - 2026-11-09 — News guard asks about a year without an event file -> error, not "no news". —
   A missing calendar must not silently disable the filter.
+- 2026-11-09 — ORB rules (chosen by Nick): breakout = 5m bar CLOSE strictly beyond the opening
+  range, entry at the next bar's open; N = 15 min; volume vs the same ET bar time over the last 10
+  sessions; min/max range as a fraction of daily ATR(14) from daily bars built from the 1h archive.
+- 2026-11-09 — ORB default numbers proposed WITHOUT looking at any result (only signal counts were
+  run, never P&L): k = 2.0, stop_fraction = 1.0, range 0.10–0.60 ATR (inclusive), volume_mult = 1.2,
+  at least 5 of 10 sessions in the volume profile, last entry bar closes by 11:30 ET, 1 signal/day.
+  They are priors for EXP-001, not tuned values.
+- 2026-11-09 — Momentum defaults (setup DISABLED until an experiment is approved): first window
+  60 min, |move| >= 0.40 %, pullback = bar low touches session VWAP and closes back above it
+  (mirrored for shorts), stop = pullback extreme, buffer 0 ATR, k = 2.0, last entry 11:30 ET.
+- 2026-11-09 — Look-ahead protection is structural: a setup gets pre-open data in `start_day` and
+  then one completed bar at a time; a signal at bar t is filled at the open of bar t+1. A test
+  scrambles/deletes all data after a cutoff and requires identical earlier signals; a deliberately
+  cheating setup is a negative control that the test must catch.
+- 2026-11-09 — A signal blocked by the news guard does not use up the daily quota and does not
+  disarm ORB: the next bar after the guard window that still closes beyond the range (with volume)
+  can trigger. — The guard limits *when* entries happen, not which days are traded.
+- 2026-11-09 — Gross trade resolution (stop before target in the same bar, gap through stop fills at
+  the open, target needs a trade THROUGH the level and never fills better than it, time exit at the
+  last session bar) lives in `execution/fills.py` from Stage C, because the Stage C scenario tests
+  need known outcomes. Stage D adds costs and sizing on top without changing these rules.
+- 2026-11-09 — `paper-lab signals` prints signal counts only, no P&L. — Outcomes are produced only by
+  a pre-registered experiment (EXP-001), so the defaults above cannot be tuned on seen results.
+- 2026-11-09 — Sessions whose data ends before the session close (e.g. today while it runs) are left
+  out of signal runs. — Otherwise the same command gives a different answer tomorrow.

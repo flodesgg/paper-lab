@@ -4,7 +4,7 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stages A (data) and B (calendar) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
+**Status:** Stages A (data), B (calendar) and C (setups: ORB on, momentum off) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
 
 ## Research process (planned)
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
@@ -24,7 +24,14 @@ uv run paper-lab check-config
 uv run paper-lab fetch --update   # needs network; appends to data_archive/
 uv run paper-lab validate         # writes reports/data_quality_<date>.md
 uv run paper-lab calendar         # checks the event calendar, shows upcoming releases
+uv run paper-lab signals          # enabled setups over the archive -> reports/signals/ (no P&L)
+uv run paper-lab signals --guard off   # same without the news guard, for comparison
 ```
+
+## Adding a setup
+One new module in `src/paper_lab/setups/` (subclass `Setup`, decorate with `@register`, define a
+pydantic `params_model`) plus a `setups.<name>` block in `config.yaml`. The registry discovers it;
+the driver handles the bar-by-bar loop, the news guard and the signal tables.
 
 ## Layout
 `src/paper_lab/` code · `tests/` · `config.yaml` (validated) · `experiments/` · `data_archive/` ·

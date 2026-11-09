@@ -146,6 +146,12 @@ class NewsGuardConfig(_Strict):
     in_session_window_min: int = Field(ge=0, le=120)
 
 
+class SetupConfig(_Strict):
+    enabled: bool
+    interval: Interval
+    params: dict[str, object]  # validated by the setup's own schema (setups/registry.py)
+
+
 class RiskConfig(_Strict):
     paper_capital_usd: float = Field(gt=0)
     risk_per_trade_pct: float = Field(gt=0, le=2.0)
@@ -165,6 +171,7 @@ class Config(_Strict):
     risk: RiskConfig
     calendar: CalendarConfig
     news_guard: NewsGuardConfig
+    setups: dict[str, SetupConfig]
 
     @model_validator(mode="after")
     def _one_primary(self) -> Config:
