@@ -8,7 +8,8 @@ Commands
   calendar             validate the event calendar, show upcoming events
   signals              run enabled setups over the archive -> reports/signals/ (no P&L)
   costs --synthetic    cost sensitivity (costs x0/x1/x2) on synthetic data (pipeline demo)
-  costs --experiment F same on the real archive, only if experiment file F is approved
+  backtest --synthetic one-page backtest report on synthetic data (pipeline demo)
+  backtest --experiment F   run approved, pre-registered experiment F on the real archive
 """
 
 from __future__ import annotations
@@ -25,6 +26,15 @@ from pathlib import Path
 import pandas as pd
 
 from paper_lab import __version__
+from paper_lab.analysis.experiment import (
+    Criteria,
+    Experiment,
+    ExperimentError,
+    check_runnable,
+    load_experiment,
+)
+from paper_lab.analysis.run import Loader, run_experiment, write_report
+from paper_lab.analysis.trials import OosLockedError, open_oos
 from paper_lab.calendar.events import load_events
 from paper_lab.calendar.news_guard import NewsGuard
 from paper_lab.calendar.sessions import session_window, trading_days
@@ -34,12 +44,7 @@ from paper_lab.data.fetch import BarSource, YFinanceSource, run_update
 from paper_lab.data.synthetic import resample_bars, synthetic_bars
 from paper_lab.data.validate import overall_status, validate_series, write_reports
 from paper_lab.execution.backtest import run_backtest
-from paper_lab.execution.sensitivity import (
-    ExperimentNotApprovedError,
-    require_approved,
-    summarize,
-    table,
-)
+from paper_lab.execution.sensitivity import summarize, table
 from paper_lab.logging_setup import setup_logging
 from paper_lab.runinfo import RunInfo, new_run_info
 from paper_lab.setups.registry import build_all
@@ -63,7 +68,8 @@ def _start(args: argparse.Namespace) -> tuple[Config, RunInfo]:
 def _cmd_check_config(args: argparse.Namespace) -> int:
     cfg, info = _start(args)
     build_all(cfg, enabled_only=False)  # every setup's params must validate too
-    print(json.dumps(info.as_dict(), indent=2))
+    # strategy_hash: what an experiment file must pin (see experiments/README.md)
+    print(json.dumps(info.as_dict() | {"strategy_hash": cfg.strategy_hash()}, indent=2))
     return 0
 
 
@@ -251,20 +257,12 @@ SYNTH_BASE = {"GC=F": (4000.0, 11), "GLD": (370.0, 12)}
 def _cmd_costs(args: argparse.Namespace) -> int:
     cfg, info = _start(args)
     log = logging.getLogger("paper_lab")
-    if args.experiment is not None:
-        try:
-            require_approved(args.experiment)
-        except ExperimentNotApprovedError as e:
-            print(f"refused: {e}", file=sys.stderr)
-            return 2
-    synthetic = args.synthetic
     setups = list(build_all(cfg).values())
     symbols = args.symbols or [i.symbol for i in cfg.instruments]
     events = load_events(cfg.calendar.events_files)
     news = NewsGuard(cfg.news_guard, cfg.session, events)
     guard = news if cfg.news_guard.mode != "off" else None
-    tz = cfg.session.timezone
-    label = "synthetic" if synthetic else Path(args.experiment).stem
+    label = "synthetic"  # on real data, cost sensitivity is part of `backtest --experiment`
     stamp = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
     out_dir = cfg.paths.reports / "cost_sensitivity" / f"{label}_{stamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -272,22 +270,8 @@ def _cmd_costs(args: argparse.Namespace) -> int:
     for sym in symbols:
         inst = cfg.instrument(sym)
         intervals = sorted({s.interval for s in setups})
-        if synthetic:
-            days = trading_days(cfg.session.exchange_calendar, *map(_date, SYNTH_DAYS))
-            base, seed = SYNTH_BASE.get(sym, (100.0, 13))
-            b5 = synthetic_bars(days, tz, base=base, seed=seed)
-            bars = {
-                iv: b5 if iv == "5m" else resample_bars(b5, iv, tz, cfg.session.start)
-                for iv in intervals
-            }
-            bars_1h = resample_bars(b5, "1h", tz, cfg.session.start)
-            run_days = days[25:]  # the first weeks only build ATR / volume history
-        else:
-            bars = {
-                iv: load_archive(cfg.paths.data_archive, inst.file_stem, iv) for iv in intervals
-            }
-            bars_1h = load_archive(cfg.paths.data_archive, inst.file_stem, "1h")
-            run_days, _ = session_days(bars[intervals[0]], cfg.session, intervals[0])
+        bars, bars_1h = _synthetic_loader(cfg)(sym, intervals)
+        run_days = _synthetic_days(cfg)
         for mult in (0.0, 1.0, 2.0):
             res = run_backtest(
                 cfg, setups, inst, bars, bars_1h, run_days, guard, news, mult, info.run_id
@@ -299,8 +283,6 @@ def _cmd_costs(args: argparse.Namespace) -> int:
         log.info("costs %s %s %s days=%d", label, sym, span, len(run_days))
     header = (
         "SYNTHETIC random-walk data: this demonstrates the pipeline and says NOTHING about gold."
-        if synthetic
-        else f"Real archive, experiment {args.experiment}."
     )
     body = table(rows)
     report = out_dir / "summary.md"
@@ -319,6 +301,140 @@ def _cmd_costs(args: argparse.Namespace) -> int:
 
 def _date(s: str) -> date:
     return date.fromisoformat(s)
+
+
+def _synthetic_days(cfg: Config) -> list[date]:
+    days = trading_days(cfg.session.exchange_calendar, *map(_date, SYNTH_DAYS))
+    return days[25:]  # the first weeks only build ATR / volume history
+
+
+def _synthetic_loader(cfg: Config) -> Loader:
+    tz = cfg.session.timezone
+
+    def load(sym: str, intervals: list[str]) -> tuple[dict[str, pd.DataFrame], pd.DataFrame]:
+        days = trading_days(cfg.session.exchange_calendar, *map(_date, SYNTH_DAYS))
+        base, seed = SYNTH_BASE.get(sym, (100.0, 13))
+        b5 = synthetic_bars(days, tz, base=base, seed=seed)
+        bars = {
+            iv: b5 if iv == "5m" else resample_bars(b5, iv, tz, cfg.session.start)
+            for iv in intervals
+        }
+        return bars, resample_bars(b5, "1h", tz, cfg.session.start)
+
+    return load
+
+
+def _archive_loader(cfg: Config) -> Loader:
+    def load(sym: str, intervals: list[str]) -> tuple[dict[str, pd.DataFrame], pd.DataFrame]:
+        stem = cfg.instrument(sym).file_stem
+        bars = {iv: load_archive(cfg.paths.data_archive, stem, iv) for iv in intervals}
+        return bars, load_archive(cfg.paths.data_archive, stem, "1h")
+
+    return load
+
+
+def _demo_experiment(cfg: Config) -> Experiment:
+    return Experiment(
+        id="EXP-000",
+        title="pipeline demo on synthetic data",
+        status="approved",
+        approved_by="demo",
+        approved_on=date(2026, 11, 9),
+        strategy_hash=cfg.strategy_hash(),
+        setups=sorted(build_all(cfg)),
+        symbols=[i.symbol for i in cfg.instruments],
+        primary_symbol=next(i.symbol for i in cfg.instruments if i.role == "primary"),
+        window="in_sample",
+        news_guard_variants=["config", "off"],
+        cost_mults=[0.0, 1.0, 2.0],
+        grid={"orb.k": [1.5, 2.0, 3.0], "orb.min_range_atr": [0.05, 0.10, 0.15]},
+        criteria=Criteria(
+            min_trades=30,
+            success_ci_low_above=0.0,
+            success_mean_x2_above=0.0,
+            failure_ci_high_below=0.0,
+        ),
+    )
+
+
+def _cmd_backtest(args: argparse.Namespace) -> int:
+    cfg, info = _start(args)
+    log = logging.getLogger("paper_lab")
+    events = load_events(cfg.calendar.events_files)
+    news = NewsGuard(cfg.news_guard, cfg.session, events)
+    stamp = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
+    reports = cfg.paths.reports
+    if args.synthetic:
+        exp = _demo_experiment(cfg)
+        days = _synthetic_days(cfg)
+        name = f"backtest_synthetic_{stamp}"
+        out_dir = reports / name
+        res = run_experiment(
+            cfg,
+            exp,
+            "synthetic",
+            (days[0], days[-1]),
+            lambda sym, bars: days,
+            _synthetic_loader(cfg),
+            news,
+            info,
+            out_dir,
+            out_dir / "trial_log.csv",
+        )
+    else:
+        try:
+            exp, _ = load_experiment(args.experiment)
+            check_runnable(exp, cfg)
+        except (ExperimentError, ValueError) as e:
+            print(f"refused: {e}", file=sys.stderr)
+            return 2
+        w = cfg.analysis.in_sample if exp.window == "in_sample" else cfg.analysis.out_of_sample
+        exp_dir = cfg.paths.experiments
+        if exp.window == "out_of_sample":
+            try:
+                open_oos(
+                    exp_dir / "oos_access.csv",
+                    exp.id,
+                    {
+                        "opened_utc": info.started_utc,
+                        "run_id": info.run_id,
+                        "git_commit": info.git_commit,
+                        "window_start": w.start.isoformat(),
+                        "window_end": w.end.isoformat(),
+                    },
+                )
+            except OosLockedError as e:
+                print(f"refused: {e}", file=sys.stderr)
+                return 2
+            log.warning("OOS window opened by %s (run %s)", exp.id, info.run_id)
+
+        def window_days(sym: str, bars: dict[str, pd.DataFrame]) -> list[date]:
+            iv = sorted(bars)[0]
+            complete, _ = session_days(bars[iv], cfg.session, iv)
+            return [d for d in complete if w.start <= d <= w.end]
+
+        name = f"backtest_{stamp}_{exp.id}"
+        out_dir = reports / name
+        res = run_experiment(
+            cfg,
+            exp,
+            exp.id,
+            (w.start, w.end),
+            window_days,
+            _archive_loader(cfg),
+            news,
+            info,
+            out_dir,
+            exp_dir / "trial_log.csv",
+        )
+    report = write_report(res, cfg, info, reports / f"{name}.md")
+    (out_dir / "run.json").write_text(
+        json.dumps(info.as_dict() | {"experiment": exp.id, "decision": res.decision}, indent=2)
+    )
+    log.info("backtest %s decision=%s report=%s", exp.id, res.decision, report)
+    print(report.read_text(encoding="utf-8"))
+    print(f"-> {report}")
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -340,10 +456,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--setups", nargs="+", help="subset of enabled setups")
     s.add_argument("--symbols", nargs="+", help="subset of configured symbols")
     k = sub.add_parser("costs", help="cost sensitivity x0/x1/x2")
-    src = k.add_mutually_exclusive_group(required=True)
-    src.add_argument("--synthetic", action="store_true", help="synthetic data (demo)")
-    src.add_argument("--experiment", type=Path, help="approved experiment file (real data)")
+    k.add_argument("--synthetic", action="store_true", required=True, help="synthetic data")
     k.add_argument("--symbols", nargs="+", help="subset of configured symbols")
+    bt = sub.add_parser("backtest", help="one-page backtest report")
+    bsrc = bt.add_mutually_exclusive_group(required=True)
+    bsrc.add_argument("--synthetic", action="store_true", help="synthetic data (demo)")
+    bsrc.add_argument("--experiment", type=Path, help="approved experiment file (real data)")
     s.add_argument(
         "--guard",
         choices=["config", "off"],
@@ -362,6 +480,7 @@ def main(argv: list[str] | None = None) -> int:
         "calendar": _cmd_calendar,
         "signals": _cmd_signals,
         "costs": _cmd_costs,
+        "backtest": _cmd_backtest,
     }
     return handlers[args.command](args)
 

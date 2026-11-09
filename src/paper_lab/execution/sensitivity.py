@@ -1,32 +1,12 @@
 """Cost sensitivity: the same trades with costs x0, x1, x2 (spec Stage D acceptance).
 
-Only plain descriptive numbers here; confidence intervals and sample-size labels belong to
-the analysis stage (Stage E). The experiment gate below keeps real-data results behind a
-pre-registered, approved experiment file (decision 2026-11-09).
+Synthetic data only: on the real archive, cost sensitivity is part of a pre-registered
+experiment (`paper-lab backtest --experiment`, analysis/run.py).
 """
 
 from __future__ import annotations
 
-import re
-from pathlib import Path
-
 import pandas as pd
-
-APPROVED = re.compile(r"^\s*status\s*:\s*approved\b", re.IGNORECASE | re.MULTILINE)
-
-
-class ExperimentNotApprovedError(RuntimeError):
-    pass
-
-
-def require_approved(path: Path) -> None:
-    """Real-data results only for an existing experiment file containing `Status: approved`."""
-    if not path.is_file():
-        raise ExperimentNotApprovedError(f"{path}: experiment file not found")
-    if not APPROVED.search(path.read_text(encoding="utf-8")):
-        raise ExperimentNotApprovedError(
-            f"{path}: no 'Status: approved' line; the user must approve the criteria first"
-        )
 
 
 def summarize(trades: pd.DataFrame) -> dict[str, float]:

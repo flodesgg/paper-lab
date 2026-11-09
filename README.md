@@ -4,9 +4,9 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stages A (data), B (calendar), C (setups: ORB on, momentum off) and D (execution, costs, risk) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
+**Status:** Stages A–E done (data, calendar, setups, execution/costs/risk, analysis). EXP-001 is drafted and waits for approval; no result on real data yet — see [STATUS.md](STATUS.md).
 
-## Research process (planned)
+## Research process
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
 - Pessimistic fill model (stop before target in the same bar, gaps fill beyond stops).
 - Costs per instrument, each marked `sourced` or `assumption` (`docs/cost_model.md`).
@@ -27,7 +27,13 @@ uv run paper-lab calendar         # checks the event calendar, shows upcoming re
 uv run paper-lab signals          # enabled setups over the archive -> reports/signals/ (no P&L)
 uv run paper-lab signals --guard off   # same without the news guard, for comparison
 uv run paper-lab costs --synthetic     # cost sensitivity x0/x1/x2 on synthetic data (demo)
+uv run paper-lab backtest --synthetic  # one-page report on synthetic data (demo)
+uv run paper-lab backtest --experiment experiments/EXP-001.md   # real data; only once approved
 ```
+
+An experiment runs only with `status: approved`, `approved_by`, `approved_on` and a
+`strategy_hash` equal to `uv run paper-lab check-config`'s current value; see
+[experiments/README.md](experiments/README.md).
 
 ## Adding a setup
 One new module in `src/paper_lab/setups/` (subclass `Setup`, decorate with `@register`, define a

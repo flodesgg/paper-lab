@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import time
+from datetime import date, time
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -198,6 +198,45 @@ class ExecutionConfig(_Strict):
     event_slippage_mult: float = Field(ge=1)
 
 
+class Window(_Strict):
+    start: date
+    end: date
+
+    @model_validator(mode="after")
+    def _ordered(self) -> Window:
+        if self.start > self.end:
+            raise ValueError("window start must not be after its end")
+        return self
+
+
+class AnalysisConfig(_Strict):
+    in_sample: Window
+    out_of_sample: Window
+    bootstrap_samples: int = Field(ge=1000)
+    bootstrap_seed: int
+    ci_level: float = Field(gt=0.5, lt=1)
+    insufficient_below: int = Field(ge=1)
+    usable_above: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def _no_overlap(self) -> AnalysisConfig:
+        if self.out_of_sample.start <= self.in_sample.end:
+            raise ValueError("out_of_sample must start after in_sample ends")
+        return self
+
+
+STRATEGY_SECTIONS = (
+    "instruments",
+    "session",
+    "risk",
+    "news_guard",
+    "setups",
+    "costs",
+    "execution",
+    "analysis",
+)
+
+
 class Config(_Strict):
     project: ProjectConfig
     paths: PathsConfig
@@ -212,6 +251,7 @@ class Config(_Strict):
     setups: dict[str, SetupConfig]
     costs: dict[str, CostConfig]
     execution: ExecutionConfig
+    analysis: AnalysisConfig
 
     @model_validator(mode="after")
     def _one_primary(self) -> Config:
@@ -224,6 +264,12 @@ class Config(_Strict):
         if set(self.costs) != set(symbols):
             raise ValueError(f"costs must have exactly one block per instrument {symbols}")
         return self
+
+    def strategy_hash(self) -> str:
+        """Hash of everything that changes trade results (not paths or logging). An experiment
+        file pins it; a run with a different value is refused."""
+        dumped = self.model_dump(mode="json")
+        return config_hash({k: dumped[k] for k in STRATEGY_SECTIONS})
 
     def instrument(self, symbol: str) -> InstrumentConfig:
         for i in self.instruments:

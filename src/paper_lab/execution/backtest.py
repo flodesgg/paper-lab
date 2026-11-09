@@ -200,6 +200,7 @@ def run_backtest(
                 exit_utc=n.exit_ts.isoformat(),
                 exit=round(n.exit_price, 6),
                 exit_reason=n.exit_reason,
+                hold_min=round((n.exit_done_ts - n.entry_ts).total_seconds() / 60.0, 2),
                 risk_usd=round(ex.risk_usd, 4),
                 r_gross=round(g.r_price, 6) if g.filled else None,
                 r_net=round(ex.r_net, 6),

@@ -29,6 +29,7 @@ TRADE_COLUMNS = [
     "exit_utc",  # start of the exit bar
     "exit",
     "exit_reason",
+    "hold_min",  # entry bar open to exit bar close
     "risk_usd",  # qty x multiplier x |entry - stop|
     "r_gross",  # cost-free path
     "r_net",  # all costs

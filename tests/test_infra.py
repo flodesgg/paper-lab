@@ -49,7 +49,7 @@ def test_cli_check_config(
     rc = main(["--config", str(REPO / "config.yaml"), "check-config"])
     assert rc == 0
     out = json.loads(capsys.readouterr().out)
-    assert {"run_id", "git_commit", "config_hash"} <= out.keys()
+    assert {"run_id", "git_commit", "config_hash", "strategy_hash"} <= out.keys()
     assert (tmp_path / "logs" / "paper_lab.log").exists()
     logging.getLogger("paper_lab").handlers.clear()
 

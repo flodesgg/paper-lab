@@ -151,3 +151,16 @@ execution:
   open_slippage_mult: 2.0          # assumption
   event_minutes: 60                # on morning-release days: first minutes of the session
   event_slippage_mult: 3.0         # assumption
+
+# Research windows and statistics (Stage E). Decision 2026-11-09 (Nick): in-sample = the
+# archive collected so far; out-of-sample = trading days from 2026-11-09 on, which did not
+# exist when the rules were written. OOS is opened at most once per experiment
+# (experiments/oos_access.csv) and never used for choosing parameters.
+analysis:
+  in_sample: {start: "2026-09-11", end: "2026-11-06"}
+  out_of_sample: {start: "2026-11-09", end: "2027-12-31"}
+  bootstrap_samples: 10000
+  bootstrap_seed: 20261109
+  ci_level: 0.95
+  insufficient_below: 30         # < 30 trades: "insufficient sample"
+  usable_above: 100              # 30-100: "weak evidence"; > 100: "usable"

@@ -155,19 +155,6 @@ def test_journal_rejects_foreign_schema(tmp_path: Path) -> None:
         upsert(p, rows, "trade_id", TRADE_COLUMNS)
 
 
-def test_experiment_gate(tmp_path: Path) -> None:
-    from paper_lab.execution.sensitivity import ExperimentNotApprovedError, require_approved
-
-    p = tmp_path / "EXP-001.md"
-    with pytest.raises(ExperimentNotApprovedError, match="not found"):
-        require_approved(p)
-    p.write_text("# EXP-001\nStatus: draft\n")
-    with pytest.raises(ExperimentNotApprovedError, match="approve"):
-        require_approved(p)
-    p.write_text("# EXP-001\nStatus: approved (2026-11-10, Nick)\n")
-    require_approved(p)
-
-
 def test_cli_costs_synthetic_and_refusal(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -187,5 +174,7 @@ def test_cli_costs_synthetic_and_refusal(
     assert trades[0] > 10 and len(set(trades)) == 1  # same trades, only costs differ
     r_net = [float(ln.split("|")[6]) for ln in lines]
     assert r_net[0] > r_net[1] > r_net[2]  # more costs, less R
-    rc = main(["--config", cfgp, "costs", "--experiment", "experiments/EXP-001.md"])
-    assert rc == 2 and "refused" in capsys.readouterr().err
+    # real data only runs through an approved experiment: `costs` has no real-data mode
+    with pytest.raises(SystemExit) as e:
+        main(["--config", cfgp, "costs"])
+    assert e.value.code == 2 and "--synthetic" in capsys.readouterr().err

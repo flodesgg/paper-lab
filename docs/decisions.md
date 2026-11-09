@@ -80,8 +80,32 @@ Running log. Newest at the bottom. Format: date — decision — reason.
 - 2026-11-09 — Risk gate per instrument account: one position at a time, max 2 trades/day, 3 stops
   end the day, no entry once the realised loss reaches 1.5 % or if a stop-out of the new trade
   would take it beyond 1.5 %.
-- 2026-11-09 — Cost sensitivity on real data runs only behind an experiment file with
-  `Status: approved` (chosen by Nick: no peeking before EXP-001 is approved). Until then
-  `paper-lab costs --synthetic` demonstrates the command on random-walk data.
+- 2026-11-09 — Cost sensitivity on real data runs only inside an approved experiment (chosen by
+  Nick: no peeking before EXP-001 is approved). `paper-lab costs --synthetic` demonstrates the
+  command on random-walk data; since Stage E the real-data path is `paper-lab backtest
+  --experiment` (cost multipliers x0/x1/x2 are part of every experiment).
 - 2026-11-09 — Backtest trades go to `reports/cost_sensitivity/...`; `journal/trades.csv` and
   `journal/daily.csv` are reserved for the forward paper loop (Stage F), same schema and writer.
+- 2026-11-09 — In-sample / out-of-sample split (chosen by Nick): IS = the archive
+  2026-09-11..2026-11-06 (41 sessions); OOS = sessions from 2026-11-09 onward, collected by the
+  daily archive / forward loop. — The archive is too short to split without leaving both halves
+  tiny; future days cannot have been seen by anyone. Dates live in `config.yaml` (`analysis`).
+- 2026-11-09 — Experiments are Markdown files with a YAML front matter (`experiments/EXP-NNN.md`):
+  setups, symbols, window, news-guard and cost variants, optional grid, decision rule. A run is
+  refused unless `status: approved` with `approved_by`/`approved_on` filled in, and the file's
+  `strategy_hash` equals the config's (a hash of every strategy-relevant section). A test fails
+  while any draft/approved experiment pins an older config. — Parameters cannot drift between
+  approval and run.
+- 2026-11-09 — The OOS window opens once per experiment (`experiments/oos_access.csv`); a second
+  run is refused. Parameter grids are allowed only in-sample.
+- 2026-11-09 — Every evaluated variant (setup, parameters, symbol, guard, cost multiplier, window)
+  is a row in `experiments/trial_log.csv`; re-running an identical trial replaces its row. The
+  report reads results against that count: deflated Sharpe ratio (Bailey & López de Prado, per
+  trade) and a Bonferroni-adjusted CI.
+- 2026-11-09 — Metrics in R; 95 % percentile bootstrap CI of mean R (10 000 resamples, fixed
+  seed). Sample label: < 30 trades insufficient, 30–100 weak, > 100 usable. Verdict "no
+  demonstrated edge" whenever the CI includes zero. The pre-registered decision (SUCCESS / FAILURE /
+  INCONCLUSIVE) is evaluated on the primary symbol, guard as configured, costs x1 (x2 for the
+  robustness condition).
+- 2026-11-09 — Experiment files quote "off": YAML 1.1 reads a bare `off` as false. The loader
+  rejects booleans in `news_guard_variants` with an explicit message (bug found by a test).
