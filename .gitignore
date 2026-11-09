@@ -1,0 +1,24 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# working data cache and logs (raw data is archived in data_archive/)
+data/
+logs/
+
+# python / tooling
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/

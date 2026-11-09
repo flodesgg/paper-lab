@@ -1,0 +1,58 @@
+[project]
+name = "paper-lab"
+version = "0.1.0"
+description = "Paper-only research lab for intraday gold setups (backtest + forward paper test)"
+readme = "README.md"
+authors = [
+    { name = "Nick", email = "119965654+flodesgg@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "exchange-calendars>=4.13.2",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
+    "pyarrow>=26.0.1",
+    "pydantic>=2.14.3",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "yfinance>=1.8.0",
+]
+
+[project.scripts]
+paper-lab = "paper_lab.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.18,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.1",
+    "pandas-stubs>=3.1.0.261029",
+    "pytest>=9.2.0",
+    "ruff>=0.17.4",
+    "types-pyyaml>=6.0.12.20261103",
+    "types-requests>=2.33.0.20261030",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["src/paper_lab"]
+
+[[tool.mypy.overrides]]
+module = ["exchange_calendars.*", "yfinance.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"

@@ -1,0 +1,52 @@
+# Paper Trading Lab configuration.
+# Validated at load time by src/paper_lab/config.py (pydantic, unknown keys rejected).
+# Any change that alters strategy behaviour must reference an experiment id (EXP-NNN)
+# in the commit message. See docs/decisions.md for the reasoning behind each default.
+
+project:
+  name: paper-lab
+  paper_only: true          # must stay true; the loader refuses anything else
+
+paths:
+  data_cache: data
+  data_archive: data_archive
+  journal: journal
+  reports: reports
+  experiments: experiments
+  logs: logs
+
+logging:
+  level: INFO
+  file: paper_lab.log
+  max_bytes: 5000000        # rotate at ~5 MB
+  backup_count: 5
+
+instruments:
+  - symbol: GC=F
+    role: primary
+    description: COMEX gold futures, continuous front month (yfinance)
+    contract_multiplier: 100   # USD per 1.00 move = 100 oz per contract
+    price_unit: USD/oz
+  - symbol: GLD
+    role: cross_check
+    description: SPDR Gold Shares ETF (yfinance)
+    contract_multiplier: 1     # one share
+    price_unit: USD/share
+
+data:
+  source: yfinance
+  archive_intervals: ["1m", "5m", "1h"]
+  storage_format: parquet      # falls back to csv if pyarrow is unavailable
+
+session:
+  timezone: America/New_York
+  start: "09:30"
+  end: "12:00"
+  exchange_calendar: XNYS      # holidays / early closes
+
+risk:
+  paper_capital_usd: 100000
+  risk_per_trade_pct: 0.5
+  daily_loss_limit_pct: 1.5
+  max_trades_per_day: 2
+  max_stops_per_day: 3         # "3 stops = day is over"
