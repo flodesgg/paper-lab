@@ -1,0 +1,333 @@
+{
+  "meta": {
+    "run_id": "20261109T162616Z-c4d27c",
+    "started_utc": "2026-11-09T16:26:16+00:00",
+    "git_commit": "696277cbb674",
+    "git_dirty": true,
+    "config_hash": "dcb40a160b4b",
+    "data_hash": "1d24e66fd368",
+    "date": "2026-11-09"
+  },
+  "status": "WARN",
+  "series": [
+    {
+      "symbol": "GC=F",
+      "interval": "1m",
+      "rows": 28419,
+      "first_ts_utc": "2026-10-11T22:11:00Z",
+      "last_ts_utc": "2026-11-09T16:02:00Z",
+      "trading_days_covered": 21,
+      "issues": [
+        {
+          "check": "outside_trading_hours",
+          "severity": "warning",
+          "count": 1,
+          "message": "0.0% of bars start outside 18:00-17:00 ET (weekly hours)",
+          "examples": [
+            "2026-10-13T21:00:00Z"
+          ]
+        },
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 20,
+          "message": "0.1% of bars have zero volume",
+          "examples": [
+            "2026-10-12T22:00:00Z",
+            "2026-10-13T21:00:00Z",
+            "2026-10-14T22:00:00Z",
+            "2026-10-15T22:00:00Z",
+            "2026-10-18T22:10:00Z"
+          ]
+        },
+        {
+          "check": "flat_zero_volume",
+          "severity": "info",
+          "count": 1,
+          "message": "bars with O=H=L=C and zero volume (likely provider-synthesised)",
+          "examples": []
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 12,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2026-10-12T22:00:00Z",
+            "2026-10-14T12:30:00Z",
+            "2026-10-15T07:36:00Z",
+            "2026-10-15T12:30:00Z",
+            "2026-10-16T14:20:00Z"
+          ]
+        },
+        {
+          "check": "session_gaps",
+          "severity": "warning",
+          "count": 10,
+          "message": "10 missing bars inside the session on 1 day(s)",
+          "examples": [
+            "2026-10-16: 10 missing"
+          ]
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "symbol": "GC=F",
+      "interval": "5m",
+      "rows": 11259,
+      "first_ts_utc": "2026-09-11T16:30:00Z",
+      "last_ts_utc": "2026-11-09T15:50:00Z",
+      "trading_days_covered": 41,
+      "issues": [
+        {
+          "check": "outside_trading_hours",
+          "severity": "warning",
+          "count": 3,
+          "message": "0.0% of bars start outside 18:00-17:00 ET (weekly hours)",
+          "examples": [
+            "2026-09-23T21:00:00Z",
+            "2026-10-05T21:00:00Z",
+            "2026-10-13T21:00:00Z"
+          ]
+        },
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 32,
+          "message": "0.3% of bars have zero volume",
+          "examples": [
+            "2026-09-14T22:00:00Z",
+            "2026-09-15T22:00:00Z",
+            "2026-09-16T22:00:00Z",
+            "2026-09-17T22:00:00Z",
+            "2026-09-21T22:00:00Z"
+          ]
+        },
+        {
+          "check": "flat_zero_volume",
+          "severity": "info",
+          "count": 1,
+          "message": "bars with O=H=L=C and zero volume (likely provider-synthesised)",
+          "examples": []
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 6,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2026-09-16T18:00:00Z",
+            "2026-10-02T12:30:00Z",
+            "2026-10-07T12:25:00Z",
+            "2026-10-14T12:30:00Z",
+            "2026-10-15T07:35:00Z"
+          ]
+        },
+        {
+          "check": "price_jump",
+          "severity": "warning",
+          "count": 1,
+          "message": "|open - previous close| > 8.0 x ATR between contiguous bars (bad print or contract roll?)",
+          "examples": [
+            "2026-10-15T07:35:00Z"
+          ]
+        },
+        {
+          "check": "session_gaps",
+          "severity": "warning",
+          "count": 2,
+          "message": "2 missing bars inside the session on 1 day(s)",
+          "examples": [
+            "2026-10-16: 2 missing"
+          ]
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "symbol": "GC=F",
+      "interval": "1h",
+      "rows": 11456,
+      "first_ts_utc": "2024-11-11T00:00:00Z",
+      "last_ts_utc": "2026-11-09T14:00:00Z",
+      "trading_days_covered": 499,
+      "issues": [
+        {
+          "check": "mixed_offsets",
+          "severity": "warning",
+          "count": 2,
+          "message": "1h bars start at different minute offsets: [0, 30]",
+          "examples": []
+        },
+        {
+          "check": "outside_trading_hours",
+          "severity": "warning",
+          "count": 7,
+          "message": "0.1% of bars start outside 18:00-17:00 ET (weekly hours)",
+          "examples": [
+            "2025-05-14T21:00:00Z",
+            "2025-08-18T21:00:00Z",
+            "2026-08-14T21:00:00Z",
+            "2026-09-03T21:00:00Z",
+            "2026-09-23T21:00:00Z"
+          ]
+        },
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 410,
+          "message": "3.6% of bars have zero volume",
+          "examples": [
+            "2024-11-11T23:00:00Z",
+            "2024-11-12T23:00:00Z",
+            "2024-11-13T23:00:00Z",
+            "2024-11-14T23:00:00Z",
+            "2024-11-18T23:00:00Z"
+          ]
+        },
+        {
+          "check": "flat_zero_volume",
+          "severity": "info",
+          "count": 1,
+          "message": "bars with O=H=L=C and zero volume (likely provider-synthesised)",
+          "examples": []
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 4,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2025-07-30T07:00:00Z",
+            "2025-08-22T14:00:00Z",
+            "2026-02-12T16:00:00Z",
+            "2026-09-04T12:00:00Z"
+          ]
+        },
+        {
+          "check": "bars_on_exchange_holiday",
+          "severity": "warning",
+          "count": 4,
+          "message": "bars inside the session window on days the XNYS calendar is closed",
+          "examples": [
+            "2025-01-09",
+            "2025-05-26",
+            "2025-06-19",
+            "2025-07-04"
+          ]
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "symbol": "GLD",
+      "interval": "1m",
+      "rows": 7791,
+      "first_ts_utc": "2026-10-12T13:31:00Z",
+      "last_ts_utc": "2026-11-09T16:02:00Z",
+      "trading_days_covered": 21,
+      "issues": [
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 4,
+          "message": "0.1% of bars have zero volume",
+          "examples": [
+            "2026-10-20T14:41:00Z",
+            "2026-10-21T14:32:00Z",
+            "2026-10-29T18:49:00Z",
+            "2026-11-03T16:05:00Z"
+          ]
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 5,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2026-10-20T13:30:00Z",
+            "2026-10-21T16:39:00Z",
+            "2026-10-28T16:54:00Z",
+            "2026-10-28T18:00:00Z",
+            "2026-10-28T18:33:00Z"
+          ]
+        },
+        {
+          "check": "session_gaps",
+          "severity": "warning",
+          "count": 4,
+          "message": "4 missing bars inside the session on 1 day(s)",
+          "examples": [
+            "2026-11-05: 4 missing"
+          ]
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "symbol": "GLD",
+      "interval": "5m",
+      "rows": 3160,
+      "first_ts_utc": "2026-09-11T16:30:00Z",
+      "last_ts_utc": "2026-11-09T15:50:00Z",
+      "trading_days_covered": 41,
+      "issues": [
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 7,
+          "message": "0.2% of bars have zero volume",
+          "examples": [
+            "2026-09-11T18:40:00Z",
+            "2026-09-15T17:30:00Z",
+            "2026-09-15T17:45:00Z",
+            "2026-09-15T17:50:00Z",
+            "2026-09-17T16:25:00Z"
+          ]
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 1,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2026-09-16T18:00:00Z"
+          ]
+        }
+      ],
+      "status": "WARN"
+    },
+    {
+      "symbol": "GLD",
+      "interval": "1h",
+      "rows": 3471,
+      "first_ts_utc": "2024-11-11T15:30:00Z",
+      "last_ts_utc": "2026-11-06T20:30:00Z",
+      "trading_days_covered": 499,
+      "issues": [
+        {
+          "check": "zero_volume",
+          "severity": "warning",
+          "count": 3,
+          "message": "0.1% of bars have zero volume",
+          "examples": [
+            "2025-11-17T17:30:00Z",
+            "2026-06-22T15:30:00Z",
+            "2026-09-11T18:30:00Z"
+          ]
+        },
+        {
+          "check": "absurd_candle",
+          "severity": "warning",
+          "count": 1,
+          "message": "range > 8.0 x ATR(20)",
+          "examples": [
+            "2026-01-29T14:30:00Z"
+          ]
+        }
+      ],
+      "status": "WARN"
+    }
+  ]
+}

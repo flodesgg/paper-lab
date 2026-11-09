@@ -4,7 +4,7 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stage 0 (skeleton). No data, no backtests, no results yet — see [STATUS.md](STATUS.md).
+**Status:** Stage A (data) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
 
 ## Research process (planned)
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
@@ -21,6 +21,8 @@ None yet. Every number in this repository must link to a file produced by its co
 uv sync
 make check
 uv run paper-lab check-config
+uv run paper-lab fetch --update   # needs network; appends to data_archive/
+uv run paper-lab validate         # writes reports/data_quality_<date>.md
 ```
 
 ## Layout

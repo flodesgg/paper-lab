@@ -19,3 +19,15 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   A typo must fail loudly, not silently fall back to a default.
 - 2026-11-09 — Storage: parquet with automatic CSV fallback (implemented in Stage A). — pyarrow broke
   once before; the pipeline must not depend on it.
+- 2026-11-09 — Archive is keep-first; provider revisions are logged, not applied. — Backtests on
+  archived data must not change after the fact; the revisions log measures how often Yahoo revises.
+- 2026-11-09 — Drop the first row of every Yahoo response and anchor each request on the last
+  received bar. — Yahoo reports volume 0 for the first row of any response (verified live).
+- 2026-11-09 — Do not archive bars younger than 20 min (+2 min grace) and always drop the newest bar
+  of a fetch. — COMEX data on Yahoo is ~10 min delayed and live GLD volume is re-attributed between
+  bars for ~15 min (verified live). The daily job runs at 12:30 ET, 30 min after the session.
+- 2026-11-09 — 1m history is backfilled ~29 days (Yahoo allows 30 days, 8 days per request), not 7.
+- 2026-11-09 — The archive written by earlier code versions was deleted and rebuilt before the first
+  commit. — It contained zero-volume artefacts and non-final bars that keep-first would have frozen.
+- 2026-11-09 — A failing series does not stop the others; MANIFEST is always rebuilt; a file lock
+  prevents concurrent fetches; `fetch` exits 1 if any series failed. — Found in code review.
