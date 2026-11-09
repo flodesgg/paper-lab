@@ -28,6 +28,7 @@ from paper_lab.analysis.metrics import (
     compute_metrics,
     deflated_sharpe,
     sample_label,
+    suspicious,
     verdict,
 )
 from paper_lab.analysis.trials import count_trials, log_trials, params_hash, trial_sharpes
@@ -264,12 +265,17 @@ def write_report(res: ExperimentResult, cfg: Config, info: RunInfo, path: Path) 
             f"on {exp.approved_on})."
         ),
         "",
+        "## Limitations (read first)",
+        "",
+        *[f"- {c}" for c in CAVEATS],
+        "",
         f"**Verdict:** {v}. **Pre-registered decision:** {res.decision} — {res.decision_reason}.",
         "",
         f"**Data:** {window_name} window, {len(days)} trading days "
         f"({days[0] if days else '-'} .. {days[-1] if days else '-'}), 5-minute bars. "
         f"**Sample:** {m.trades} trades on {exp.primary_symbol} → `{label}`.",
         "",
+        *[f"**SUSPICIOUS:** {n}.\n" for n in suspicious(m, len(days))],
         f"## {exp.primary_symbol}, news guard as configured, costs x1",
         "",
         "| trades | win rate | avg win R | avg loss R | expectancy R | "
@@ -331,10 +337,6 @@ def write_report(res: ExperimentResult, cfg: Config, info: RunInfo, path: Path) 
         f"Deflated Sharpe probability: {_f(res.deflated_sharpe)}. Bonferroni "
         f"{res.bonferroni_level:.2%} CI: [{_f(bl)}, {_f(bh)}]"
         + (" — includes zero." if not (bl > 0 or bh < 0) else "."),
-        "",
-        "## Caveats",
-        "",
-        *[f"- {c}" for c in CAVEATS],
         "",
         f"Run `{info.run_id}`, commit `{info.git_commit}`{' (dirty)' if info.git_dirty else ''}, "
         f"strategy hash `{cfg.strategy_hash()}`, data hash `{info.data_hash}`. Trade files: "

@@ -20,6 +20,7 @@ criteria:                     # primary symbol, guard as configured, costs x1 (x
   success_ci_low_above: 0.0   # SUCCESS: 95% CI lower bound of mean R net above this ...
   success_mean_x2_above: 0.0  # ... AND mean R net with costs x2 above this
   failure_ci_high_below: 0.0  # FAILURE: 95% CI upper bound below this
+decision:                     # empty until status: done; then SUCCESS | FAILURE | INCONCLUSIVE
 ---
 
 # EXP-NNN — title

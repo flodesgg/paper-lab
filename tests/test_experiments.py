@@ -55,7 +55,10 @@ def test_draft_is_refused() -> None:
 
 
 def _write(tmp: Path, **changes: object) -> Path:
+    """Copy of EXP-001 with front-matter fields replaced (decision cleared unless done)."""
     text = (EXP_DIR / "EXP-001.md").read_text()
+    if changes.get("status", "done") != "done":
+        changes.setdefault("decision", "")
     for k, v in changes.items():
         text = re.sub(rf"^{k}:.*$", f"{k}: {v}", text, count=1, flags=re.M)
     p = tmp / "EXP-001.md"
@@ -195,6 +198,15 @@ def test_cli_backtest_end_to_end(
     assert main(args) == 0
     capsys.readouterr()
     assert main(args) == 2 and "once per experiment" in capsys.readouterr().err
+
+
+def test_decision_only_when_done(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="decision is set exactly"):
+        load_experiment(_write(tmp_path, status="approved", decision="FAILURE"))
+    with pytest.raises(ValueError, match="decision is set exactly"):
+        load_experiment(_write(tmp_path, decision=""))
+    exp, _ = load_experiment(EXP_DIR / "EXP-001.md")
+    assert exp.status == "done" and exp.decision == "INCONCLUSIVE"
 
 
 def test_bare_yaml_off_is_reported_clearly(tmp_path: Path) -> None:

@@ -164,3 +164,16 @@ analysis:
   ci_level: 0.95
   insufficient_below: 30         # < 30 trades: "insufficient sample"
   usable_above: 100              # 30-100: "weak evidence"; > 100: "usable"
+
+# Stage F: daily forward paper loop. Operational settings, not part of the strategy hash:
+# the strategy itself (setups, risk, costs) is fixed above and pinned by the experiments.
+forward:
+  start: "2026-11-09"            # first forward session = first out-of-sample day
+  # Mac local times (launchd, Europe/Copenhagen). The ET session ends 12:00 = 18:00 local
+  # (17:00 in the US/EU DST mismatch weeks); +45 min for Yahoo's delay. A missed time
+  # (Mac asleep) runs on wake; a powered-off Mac catches up at login (RunAtLoad).
+  schedule_local: ["18:45", "21:30"]
+  alarm_min_trades: 20           # spec F.3: alarm evaluated from 20 forward trades on
+  alarm_expectancy_r: -0.10      # ... when forward expectancy is below this
+  baseline_experiment: EXP-001   # backtest the forward results are compared with
+  baseline_dir: reports/backtest_2026-11-09_EXP-001

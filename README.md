@@ -4,7 +4,7 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stages A–E done (data, calendar, setups, execution/costs/risk, analysis). EXP-001 (in-sample ORB baseline) ran once: INCONCLUSIVE — see [STATUS.md](STATUS.md).
+**Status:** Stages A–F done (data, calendar, setups, execution/costs/risk, analysis, forward loop). EXP-001 (in-sample ORB baseline) ran once: INCONCLUSIVE; the forward paper journal grows daily from 2026-11-09 — see [STATUS.md](STATUS.md).
 
 ## Research process
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
@@ -12,6 +12,8 @@ No real money, no live orders, ever.
 - Costs per instrument, each marked `sourced` or `assumption` (`docs/cost_model.md`).
 - Pre-registered experiments (`experiments/EXP-NNN.md`) and a log of every variant tried.
 - In-sample / locked out-of-sample split; bootstrap confidence intervals; "no edge found" is a valid result.
+- Daily forward paper loop on unseen sessions (`journal/`), weekly report with an alarm and a
+  freeze rule ([docs/forward_loop.md](docs/forward_loop.md)).
 
 ## Results
 Every number in this repository must link to a file produced by its code.
@@ -19,6 +21,8 @@ Every number in this repository must link to a file produced by its code.
 - EXP-001, ORB baseline, GC=F in-sample (41 sessions): 26 trades, -0.050 R per trade after
   costs, 95 % CI [-0.406, 0.333] → **INCONCLUSIVE, no demonstrated edge**
   ([report](reports/backtest_2026-11-09_EXP-001.md), [experiment](experiments/EXP-001.md)).
+- Forward paper test from 2026-11-09: journal in [journal/](journal/), weekly reports
+  `reports/weekly_<date>.md`. Too few trades yet for any statement.
 
 ## Reproduce
 ```bash
@@ -33,6 +37,8 @@ uv run paper-lab signals --guard off   # same without the news guard, for compar
 uv run paper-lab costs --synthetic     # cost sensitivity x0/x1/x2 on synthetic data (demo)
 uv run paper-lab backtest --synthetic  # one-page report on synthetic data (demo)
 uv run paper-lab backtest --experiment experiments/EXP-NNN.md   # real data; approved experiments only
+uv run paper-lab forward --commit --push   # forward paper loop (what the scheduler runs)
+scripts/agent.sh install | status | uninstall   # launchd scheduler (docs/forward_loop.md)
 ```
 
 An experiment runs only with `status: approved`, `approved_by`, `approved_on` and a

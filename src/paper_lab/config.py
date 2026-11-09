@@ -225,6 +225,15 @@ class AnalysisConfig(_Strict):
         return self
 
 
+class ForwardConfig(_Strict):
+    start: date
+    schedule_local: list[time] = Field(min_length=1)
+    alarm_min_trades: int = Field(ge=1)
+    alarm_expectancy_r: float
+    baseline_experiment: str = Field(pattern=r"^EXP-\d{3}$")
+    baseline_dir: Path
+
+
 STRATEGY_SECTIONS = (
     "instruments",
     "session",
@@ -252,6 +261,7 @@ class Config(_Strict):
     costs: dict[str, CostConfig]
     execution: ExecutionConfig
     analysis: AnalysisConfig
+    forward: ForwardConfig
 
     @model_validator(mode="after")
     def _one_primary(self) -> Config:
@@ -263,6 +273,8 @@ class Config(_Strict):
             raise ValueError("instrument symbols must be unique")
         if set(self.costs) != set(symbols):
             raise ValueError(f"costs must have exactly one block per instrument {symbols}")
+        if self.forward.start < self.analysis.out_of_sample.start:
+            raise ValueError("forward.start must not be before the out-of-sample window")
         return self
 
     def strategy_hash(self) -> str:

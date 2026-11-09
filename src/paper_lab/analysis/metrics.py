@@ -117,6 +117,34 @@ def verdict(ci: tuple[float, float], n: int, insufficient_below: int = 30) -> st
     return base
 
 
+SUSPICIOUS_PF = 2.0
+SUSPICIOUS_SHARPE = 3.0
+SMALL_SAMPLE = 100
+MIN_TRADES_TO_FLAG = (
+    10  # below this, PF and Sharpe are pure noise; flagging them teaches to ignore flags
+)
+
+
+def suspicious(m: Metrics, sessions: int) -> list[str]:
+    """Spec §7: results that look too good are flagged as likely bugs before anything else.
+    The per-trade Sharpe is annualised with the observed trade frequency (252 sessions)."""
+    notes: list[str] = []
+    if m.trades < MIN_TRADES_TO_FLAG:
+        return notes
+    if m.trades < SMALL_SAMPLE and m.profit_factor > SUSPICIOUS_PF:
+        notes.append(
+            f"profit factor {m.profit_factor:.2f} on only {m.trades} trades is suspiciously high: "
+            "look for a bug (look-ahead, fills, costs) before believing it"
+        )
+    if m.trades > 1 and sessions > 0 and not math.isnan(m.sharpe_per_trade):
+        annual = m.sharpe_per_trade * math.sqrt(m.trades / sessions * 252)
+        if annual > SUSPICIOUS_SHARPE:
+            notes.append(
+                f"annualised Sharpe ~{annual:.1f} is suspiciously high: look for a bug first"
+            )
+    return notes
+
+
 def expected_max_sharpe(n_trials: int, sr_variance: float) -> float:
     """Expected maximum Sharpe of ``n_trials`` zero-skill trials (Bailey & Lopez de Prado,
     2014, 'The Deflated Sharpe Ratio'); 0 for a single trial."""

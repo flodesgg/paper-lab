@@ -54,6 +54,8 @@ class Experiment(BaseModel):
     cost_mults: list[float] = Field(min_length=1)
     grid: dict[str, list[float]] = Field(default_factory=dict)  # "setup.param": values
     criteria: Criteria
+    # filled in after the single run (status: done); the freeze rule reads it
+    decision: Literal["SUCCESS", "FAILURE", "INCONCLUSIVE"] | None = None
 
     @field_validator("news_guard_variants", mode="before")
     @classmethod
@@ -64,6 +66,8 @@ class Experiment(BaseModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> Experiment:
+        if (self.decision is None) != (self.status != "done"):
+            raise ValueError("decision is set exactly when status is 'done'")
         if self.primary_symbol not in self.symbols:
             raise ValueError("primary_symbol must be one of symbols")
         if self.grid and self.window != "in_sample":

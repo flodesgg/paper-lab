@@ -114,3 +114,28 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   parameters stay unchanged and the same rules go into the forward paper loop.
 - 2026-11-09 — `make check` must not be piped into `tail` when its exit code gates a commit:
   4f8a491 was pushed with one failing test because the pipe hid the failure (fixed in cb57296).
+- 2026-11-09 — Forward loop (Stage F): each complete session from 2026-11-09 is computed once,
+  right after it completes, with the backtest code at costs x1 and the guard as configured;
+  later data revisions never change a journal row. The forward journal is out-of-sample data:
+  it is monitored weekly but never used to tune parameters. (docs/forward_loop.md)
+- 2026-11-09 — Schedule 18:45 and 21:30 Copenhagen time plus RunAtLoad: one fixed local time
+  after the latest possible ET close (+Yahoo delay) in both DST regimes, a second try the same
+  evening, and catch-up at login. The `forward` config section is operational and is NOT part
+  of the strategy hash.
+- 2026-11-09 — The loop commits only `data_archive/`, `journal/`, `reports/weekly_*.md` with a
+  pathspec commit, never other work in the tree, and refuses files > 20 MB.
+- 2026-11-09 — Alarm: expectancy < −0.10 R after >= 20 forward trades (spec F.3), compared at
+  the journal's 6-decimal precision (20 x −0.1 is not an alarm; float noise was).
+- 2026-11-09 — Freeze needs a reference: an experiment with `decision: FAILURE` (new front-matter
+  field, set when status becomes done) or a weekly report with an ALARM for that setup. The edit
+  flips only the `enabled` flag (verified by reloading the config). Re-enabling needs a new
+  experiment approved after the freeze; otherwise forward/signals/backtest/check-config refuse.
+- 2026-11-09 — Spec §7 fix (my omission in Stage E): reports put limitations BEFORE results and
+  flag too-good results (PF > 2 on < 100 trades, annualised Sharpe > 3) as suspicious, from 10
+  trades on. The two reports committed earlier (`reports/backtest_synthetic_2026-11-09.md`,
+  `reports/backtest_2026-11-09_EXP-001.md`) still have the caveats at the end; their numbers
+  are unchanged and EXP-001 is not re-run for this.
+- 2026-11-09 — Regression test (spec §6): a fixed synthetic archive replayed through the
+  forward loop must reproduce `tests/fixtures/expected_forward_trades.csv` (18 trades;
+  regenerate deliberately with `PAPER_LAB_REGEN=1` and review the diff).
+
