@@ -1,0 +1,3 @@
+day_id,run_id,day,symbol,setups,signals,trades,wins,losses,stops,time_exits,r_gross_sum,r_net_sum,pnl_net_usd,halted,comment
+2026-11-09|GC=F,20261109T175158Z-ce5ec8,2026-11-09,GC=F,orb:scanned,0,0,0,0,0,0,0,0,0,,
+2026-11-09|GLD,20261109T175158Z-ce5ec8,2026-11-09,GLD,orb:scanned,0,0,0,0,0,0,0,0,0,,
