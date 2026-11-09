@@ -1,0 +1,33 @@
+datetime_et,event,reference_period,source_url,retrieved_on,status,time_basis
+2027-01-08 08:30,NFP,2026-12,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-01-13 08:30,CPI,2026-12,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-01-27 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-02-05 08:30,NFP,2027-01,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-02-11 08:30,CPI,2027-01,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-03-05 08:30,NFP,2027-02,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-03-10 08:30,CPI,2027-02,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-03-17 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-04-02 08:30,NFP,2027-03,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-04-13 08:30,CPI,2027-03,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-04-28 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-05-07 08:30,NFP,2027-04,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-05-12 08:30,CPI,2027-04,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-06-04 08:30,NFP,2027-05,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-06-09 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-06-10 08:30,CPI,2027-05,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-07-02 08:30,NFP,2027-06,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-07-14 08:30,CPI,2027-06,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-07-28 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-08-06 08:30,NFP,2027-07,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-08-11 08:30,CPI,2027-07,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-09-03 08:30,NFP,2027-08,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-09-14 08:30,CPI,2027-08,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-09-15 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-10-08 08:30,NFP,2027-09,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-10-14 08:30,CPI,2027-09,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-10-27 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-11-05 08:30,NFP,2027-10,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-11-10 08:30,CPI,2027-10,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-12-03 08:30,NFP,2027-11,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2027-12-08 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,tentative,assumed 2:00 p.m.; Fed: dates tentative until confirmed at the preceding meeting
+2027-12-10 08:30,CPI,2027-11,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM

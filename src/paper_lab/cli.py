@@ -13,12 +13,16 @@ import argparse
 import json
 import logging
 import sys
+from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
 
 import pandas as pd
 
 from paper_lab import __version__
+from paper_lab.calendar.events import load_events
+from paper_lab.calendar.news_guard import NewsGuard
+from paper_lab.calendar.sessions import session_window, trading_days
 from paper_lab.config import Config, load_config
 from paper_lab.data.archive import archive_hash, load_archive
 from paper_lab.data.fetch import BarSource, YFinanceSource, run_update
@@ -97,6 +101,45 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     return 1 if status == "FAIL" else 0
 
 
+def _cmd_calendar(args: argparse.Namespace) -> int:
+    cfg, _ = _start(args)
+    events = load_events(cfg.calendar.events_files)
+    guard = NewsGuard(cfg.news_guard, cfg.session, events)
+    counts = Counter((e.ts_et.year, e.event, e.status) for e in events)
+    print("events by year / type / status:")
+    for (y, ev, st), n in sorted(counts.items()):
+        print(f"  {y} {ev:4} {st:10} {n}")
+    today = pd.Timestamp.now(tz=cfg.session.timezone).date()
+    upcoming = [e for e in events if e.day >= today][: args.upcoming]
+    print(f"next {len(upcoming)} events:")
+    for e in upcoming:
+        w = session_window(cfg.session, e.day)
+        note = (
+            "no session"
+            if w is None
+            else (
+                "open guard day"
+                if guard.is_event_day(e.day)
+                else "after session close"
+                if e.ts_utc >= w.close_utc
+                else "in session"
+            )
+        )
+        print(f"  {e.ts_et:%Y-%m-%d %a %H:%M} ET  {e.event:4} {e.status:9} -> {note}")
+    stem = cfg.instruments[0].file_stem
+    bars = load_archive(cfg.paths.data_archive, stem, "5m")
+    if len(bars):
+        first = bars.index.min().tz_convert(cfg.session.timezone).date()
+        last = bars.index.max().tz_convert(cfg.session.timezone).date()
+        days = trading_days(cfg.session.exchange_calendar, first, last)
+        ev_days = [d for d in days if guard.is_event_day(d)]
+        print(
+            f"{stem} 5m archive {first}..{last}: {len(days)} trading days, "
+            f"{len(ev_days)} with a morning release: {', '.join(map(str, ev_days))}"
+        )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="paper-lab", description="Paper trading research lab")
     p.add_argument("--version", action="version", version=f"paper-lab {__version__}")
@@ -110,12 +153,19 @@ def build_parser() -> argparse.ArgumentParser:
     f.add_argument("--symbols", nargs="+", help="subset of configured symbols")
     f.add_argument("--intervals", nargs="+", help="subset of configured intervals")
     sub.add_parser("validate", help="write a data-quality report (exit 1 on errors)")
+    c = sub.add_parser("calendar", help="validate the event calendar and show upcoming events")
+    c.add_argument("--upcoming", type=int, default=8)
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    handlers = {"check-config": _cmd_check_config, "fetch": _cmd_fetch, "validate": _cmd_validate}
+    handlers = {
+        "check-config": _cmd_check_config,
+        "fetch": _cmd_fetch,
+        "validate": _cmd_validate,
+        "calendar": _cmd_calendar,
+    }
     return handlers[args.command](args)
 
 

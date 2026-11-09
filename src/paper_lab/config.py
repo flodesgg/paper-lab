@@ -132,6 +132,20 @@ class SessionConfig(_Strict):
         return v
 
 
+EventName = Literal["CPI", "NFP", "FOMC"]
+
+
+class CalendarConfig(_Strict):
+    events_files: list[Path] = Field(min_length=1)
+
+
+class NewsGuardConfig(_Strict):
+    mode: Literal["off", "open_guard"]
+    open_guard_min: int = Field(ge=0, le=150)
+    morning_events: list[EventName]
+    in_session_window_min: int = Field(ge=0, le=120)
+
+
 class RiskConfig(_Strict):
     paper_capital_usd: float = Field(gt=0)
     risk_per_trade_pct: float = Field(gt=0, le=2.0)
@@ -149,6 +163,8 @@ class Config(_Strict):
     validation: ValidationConfig
     session: SessionConfig
     risk: RiskConfig
+    calendar: CalendarConfig
+    news_guard: NewsGuardConfig
 
     @model_validator(mode="after")
     def _one_primary(self) -> Config:

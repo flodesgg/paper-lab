@@ -101,6 +101,102 @@ available because the archive grows daily.
 - `mixed_offsets` for GC=F 1h: a few hourly bars start at :30. Not investigated yet; 1h data is
   not used for intraday entries.
 
+
+## Macro-event calendar (2026–2027)
+
+Files: `data/calendar/events_2026.csv`, `data/calendar/events_2027.csv` (retrieved 2026-11-09).
+Check with `uv run paper-lab calendar`.
+
+How the dates were obtained:
+- **BLS (CPI, Employment Situation / NFP):** bls.gov returns HTTP 403 to scripts, so the pages
+  were read in a browser. Past 2026 releases: the date comes from the archived release itself
+  and the time from its header ("embargoed until 8:30 a.m. (ET)"). Future releases: BLS schedule
+  pages, which state 08:30 AM. Status `released` or `scheduled`.
+- **Fed (FOMC):** downloaded from federalreserve.gov. The statement is on the second day of the
+  meeting. The time (2:00 p.m.) comes from each 2026 press release that has already been
+  published. For future meetings the calendar page gives no time, so 14:00 is an **assumption**
+  (`time_basis` says so). The Fed calls 2027 dates tentative until the preceding meeting, so
+  they are `tentative`.
+- No event is `unverified`. Other releases (PPI, retail sales, GDP, Fed speeches, etc.) are not
+  included. They can be added on request.
+
+Timing facts used by the news guard (tested): CPI and NFP are released at 08:30 ET, before the
+09:30 open. FOMC statements come at 14:00 ET, after the 12:00 session end. A ±15 min window
+around any of these never overlaps the session, so the guard instead blocks the first
+`open_guard_min` (30) minutes on morning-release days. `news_guard.mode: off` is the
+no-filter variant.
+
+**Sample warning:** the 5m archive (2026-09-11..2026-11-09) contains only **4** morning-release
+days (2026-09-11, 2026-10-02, 2026-10-14, 2026-11-06). That is far too few to judge whether the
+filter helps; any backtest must say so.
+
+| Date/time (ET) | Event | Ref. period | Status | Source |
+|---|---|---|---|---|
+| 2026-01-09 08:30 | NFP | 2025-12 | released | [www.bls.gov/news.release/archives/empsit_01092026.htm](https://www.bls.gov/news.release/archives/empsit_01092026.htm) |
+| 2026-01-13 08:30 | CPI | 2025-12 | released | [www.bls.gov/news.release/archives/cpi_01132026.htm](https://www.bls.gov/news.release/archives/cpi_01132026.htm) |
+| 2026-01-28 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm) |
+| 2026-02-11 08:30 | NFP | 2026-01 | released | [www.bls.gov/news.release/archives/empsit_02112026.htm](https://www.bls.gov/news.release/archives/empsit_02112026.htm) |
+| 2026-02-13 08:30 | CPI | 2026-01 | released | [www.bls.gov/news.release/archives/cpi_02132026.htm](https://www.bls.gov/news.release/archives/cpi_02132026.htm) |
+| 2026-03-06 08:30 | NFP | 2026-02 | released | [www.bls.gov/news.release/archives/empsit_03062026.htm](https://www.bls.gov/news.release/archives/empsit_03062026.htm) |
+| 2026-03-11 08:30 | CPI | 2026-02 | released | [www.bls.gov/news.release/archives/cpi_03112026.htm](https://www.bls.gov/news.release/archives/cpi_03112026.htm) |
+| 2026-03-18 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm) |
+| 2026-04-03 08:30 | NFP | 2026-03 | released | [www.bls.gov/news.release/archives/empsit_04032026.htm](https://www.bls.gov/news.release/archives/empsit_04032026.htm) |
+| 2026-04-10 08:30 | CPI | 2026-03 | released | [www.bls.gov/news.release/archives/cpi_04102026.htm](https://www.bls.gov/news.release/archives/cpi_04102026.htm) |
+| 2026-04-29 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm) |
+| 2026-05-08 08:30 | NFP | 2026-04 | released | [www.bls.gov/news.release/archives/empsit_05082026.htm](https://www.bls.gov/news.release/archives/empsit_05082026.htm) |
+| 2026-05-12 08:30 | CPI | 2026-04 | released | [www.bls.gov/news.release/archives/cpi_05122026.htm](https://www.bls.gov/news.release/archives/cpi_05122026.htm) |
+| 2026-06-05 08:30 | NFP | 2026-05 | released | [www.bls.gov/news.release/archives/empsit_06052026.htm](https://www.bls.gov/news.release/archives/empsit_06052026.htm) |
+| 2026-06-10 08:30 | CPI | 2026-05 | released | [www.bls.gov/news.release/archives/cpi_06102026.htm](https://www.bls.gov/news.release/archives/cpi_06102026.htm) |
+| 2026-06-17 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm) |
+| 2026-07-02 08:30 | NFP | 2026-06 | released | [www.bls.gov/news.release/archives/empsit_07022026.htm](https://www.bls.gov/news.release/archives/empsit_07022026.htm) |
+| 2026-07-14 08:30 | CPI | 2026-06 | released | [www.bls.gov/news.release/archives/cpi_07142026.htm](https://www.bls.gov/news.release/archives/cpi_07142026.htm) |
+| 2026-07-29 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm) |
+| 2026-08-07 08:30 | NFP | 2026-07 | released | [www.bls.gov/news.release/archives/empsit_08072026.htm](https://www.bls.gov/news.release/archives/empsit_08072026.htm) |
+| 2026-08-12 08:30 | CPI | 2026-07 | released | [www.bls.gov/news.release/archives/cpi_08122026.htm](https://www.bls.gov/news.release/archives/cpi_08122026.htm) |
+| 2026-09-04 08:30 | NFP | 2026-08 | released | [www.bls.gov/news.release/archives/empsit_09042026.htm](https://www.bls.gov/news.release/archives/empsit_09042026.htm) |
+| 2026-09-11 08:30 | CPI | 2026-08 | released | [www.bls.gov/news.release/archives/cpi_09112026.htm](https://www.bls.gov/news.release/archives/cpi_09112026.htm) |
+| 2026-09-16 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm) |
+| 2026-10-02 08:30 | NFP | 2026-09 | released | [www.bls.gov/news.release/archives/empsit_10022026.htm](https://www.bls.gov/news.release/archives/empsit_10022026.htm) |
+| 2026-10-14 08:30 | CPI | 2026-09 | released | [www.bls.gov/news.release/archives/cpi_10142026.htm](https://www.bls.gov/news.release/archives/cpi_10142026.htm) |
+| 2026-10-28 14:00 | FOMC | – | released | [www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm](https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm) |
+| 2026-11-06 08:30 | NFP | 2026-10 | released | [www.bls.gov/news.release/archives/empsit_11062026.htm](https://www.bls.gov/news.release/archives/empsit_11062026.htm) |
+| 2026-11-10 08:30 | CPI | 2026-10 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2026-12-04 08:30 | NFP | 2026-11 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2026-12-09 14:00 | FOMC | – | scheduled | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2026-12-10 08:30 | CPI | 2026-11 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-01-08 08:30 | NFP | 2026-12 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-01-13 08:30 | CPI | 2026-12 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-01-27 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-02-05 08:30 | NFP | 2027-01 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-02-11 08:30 | CPI | 2027-01 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-03-05 08:30 | NFP | 2027-02 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-03-10 08:30 | CPI | 2027-02 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-03-17 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-04-02 08:30 | NFP | 2027-03 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-04-13 08:30 | CPI | 2027-03 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-04-28 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-05-07 08:30 | NFP | 2027-04 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-05-12 08:30 | CPI | 2027-04 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-06-04 08:30 | NFP | 2027-05 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-06-09 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-06-10 08:30 | CPI | 2027-05 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-07-02 08:30 | NFP | 2027-06 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-07-14 08:30 | CPI | 2027-06 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-07-28 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-08-06 08:30 | NFP | 2027-07 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-08-11 08:30 | CPI | 2027-07 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-09-03 08:30 | NFP | 2027-08 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-09-14 08:30 | CPI | 2027-08 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-09-15 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-10-08 08:30 | NFP | 2027-09 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-10-14 08:30 | CPI | 2027-09 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-10-27 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-11-05 08:30 | NFP | 2027-10 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-11-10 08:30 | CPI | 2027-10 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+| 2027-12-03 08:30 | NFP | 2027-11 | scheduled | [www.bls.gov/schedule/news_release/empsit.htm](https://www.bls.gov/schedule/news_release/empsit.htm) |
+| 2027-12-08 14:00 | FOMC | – | tentative | [www.federalreserve.gov/monetarypolicy/fomccalendars.htm](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm) |
+| 2027-12-10 08:30 | CPI | 2027-11 | scheduled | [www.bls.gov/schedule/news_release/cpi.htm](https://www.bls.gov/schedule/news_release/cpi.htm) |
+
 ## Validation report
 
 `uv run paper-lab validate` writes `reports/data_quality_<date>.md` and `.json` and exits 1 if

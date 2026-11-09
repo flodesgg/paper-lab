@@ -71,3 +71,15 @@ risk:
   daily_loss_limit_pct: 1.5
   max_trades_per_day: 2
   max_stops_per_day: 3         # "3 stops = day is over"
+
+calendar:
+  # Official release dates, one row per event with its source URL (docs/data_notes.md).
+  events_files:
+    - data/calendar/events_2026.csv
+    - data/calendar/events_2027.csv
+
+news_guard:
+  mode: open_guard             # off | open_guard  (run both to measure the filter's effect)
+  open_guard_min: 30           # no new entries in the first N session minutes after a morning release
+  morning_events: [CPI, NFP]   # released 08:30 ET, before the 09:30 open
+  in_session_window_min: 15    # +/- window for an event released during the session (none today)

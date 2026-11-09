@@ -1,0 +1,33 @@
+datetime_et,event,reference_period,source_url,retrieved_on,status,time_basis
+2026-01-09 08:30,NFP,2025-12,https://www.bls.gov/news.release/archives/empsit_01092026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-01-13 08:30,CPI,2025-12,https://www.bls.gov/news.release/archives/cpi_01132026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-01-28 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-02-11 08:30,NFP,2026-01,https://www.bls.gov/news.release/archives/empsit_02112026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-02-13 08:30,CPI,2026-01,https://www.bls.gov/news.release/archives/cpi_02132026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-03-06 08:30,NFP,2026-02,https://www.bls.gov/news.release/archives/empsit_03062026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-03-11 08:30,CPI,2026-02,https://www.bls.gov/news.release/archives/cpi_03112026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-03-18 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-04-03 08:30,NFP,2026-03,https://www.bls.gov/news.release/archives/empsit_04032026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-04-10 08:30,CPI,2026-03,https://www.bls.gov/news.release/archives/cpi_04102026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-04-29 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-05-08 08:30,NFP,2026-04,https://www.bls.gov/news.release/archives/empsit_05082026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-05-12 08:30,CPI,2026-04,https://www.bls.gov/news.release/archives/cpi_05122026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-06-05 08:30,NFP,2026-05,https://www.bls.gov/news.release/archives/empsit_06052026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-06-10 08:30,CPI,2026-05,https://www.bls.gov/news.release/archives/cpi_06102026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-06-17 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-07-02 08:30,NFP,2026-06,https://www.bls.gov/news.release/archives/empsit_07022026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-07-14 08:30,CPI,2026-06,https://www.bls.gov/news.release/archives/cpi_07142026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-07-29 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-08-07 08:30,NFP,2026-07,https://www.bls.gov/news.release/archives/empsit_08072026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-08-12 08:30,CPI,2026-07,https://www.bls.gov/news.release/archives/cpi_08122026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-09-04 08:30,NFP,2026-08,https://www.bls.gov/news.release/archives/empsit_09042026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-09-11 08:30,CPI,2026-08,https://www.bls.gov/news.release/archives/cpi_09112026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-09-16 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-10-02 08:30,NFP,2026-09,https://www.bls.gov/news.release/archives/empsit_10022026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-10-14 08:30,CPI,2026-09,https://www.bls.gov/news.release/archives/cpi_10142026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-10-28 14:00,FOMC,,https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm,2026-11-09,released,press release: For release at 2:00 p.m.
+2026-11-06 08:30,NFP,2026-10,https://www.bls.gov/news.release/archives/empsit_11062026.htm,2026-11-09,released,release header: embargoed until 8:30 a.m. (ET)
+2026-11-10 08:30,CPI,2026-10,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2026-12-04 08:30,NFP,2026-11,https://www.bls.gov/schedule/news_release/empsit.htm,2026-11-09,scheduled,schedule page: 08:30 AM
+2026-12-09 14:00,FOMC,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,2026-11-09,scheduled,assumed: every 2026 statement was released at 2:00 p.m.; calendar page gives no time
+2026-12-10 08:30,CPI,2026-11,https://www.bls.gov/schedule/news_release/cpi.htm,2026-11-09,scheduled,schedule page: 08:30 AM

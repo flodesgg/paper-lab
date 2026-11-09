@@ -31,3 +31,13 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   commit. — It contained zero-volume artefacts and non-final bars that keep-first would have frozen.
 - 2026-11-09 — A failing series does not stop the others; MANIFEST is always rebuilt; a file lock
   prevents concurrent fetches; `fetch` exits 1 if any series failed. — Found in code review.
+- 2026-11-09 — Event calendar stored as committed CSVs under `data/calendar/` (`data/*` ignored
+  except this folder). BLS dates read in a browser because bls.gov blocks scripts (403); every
+  row keeps its official source URL, and the loader rejects non-official hosts. — Spec forbids
+  guessing dates; scraping around the block would breach the site's terms.
+- 2026-11-09 — Future FOMC statement time 14:00 ET is an assumption (all 2026 statements were at
+  2:00 p.m.); 2027 FOMC dates are `tentative` as the Fed states. — Honest labelling.
+- 2026-11-09 — Exchange calendar range fixed to 2000–2030. — The library's default ends one year
+  after today, which made results depend on the run date (Dec 2027 events failed).
+- 2026-11-09 — News guard asks about a year without an event file -> error, not "no news". —
+  A missing calendar must not silently disable the filter.
