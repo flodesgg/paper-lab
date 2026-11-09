@@ -40,11 +40,18 @@ def test_repo_experiments_parse_and_pin_current_config() -> None:
             assert exp.strategy_hash == CFG.strategy_hash(), f"{p.name} pins an old config"
 
 
-def test_exp001_is_not_approved_by_code() -> None:
+def test_approved_experiments_name_who_and_when() -> None:
+    for p in EXP_DIR.glob("EXP-[0-9][0-9][0-9].md"):
+        exp, _ = load_experiment(p)
+        if exp.status in ("approved", "done"):
+            assert exp.approved_by and exp.approved_on, p.name
+
+
+def test_draft_is_refused() -> None:
     exp, _ = load_experiment(EXP_DIR / "EXP-001.md")
-    assert exp.status == "draft" and exp.approved_by is None
+    draft = exp.model_copy(update={"status": "draft"})
     with pytest.raises(ExperimentError, match="only 'approved' runs"):
-        check_runnable(exp, CFG)
+        check_runnable(draft, CFG)
 
 
 def _write(tmp: Path, **changes: object) -> Path:
@@ -160,7 +167,7 @@ def test_cli_backtest_end_to_end(
         merge_into_archive(tmp_path / "data_archive", sym, stem, "1h", b1, seen)
     cfgp = str(REPO / "config.yaml")
 
-    shutil.copy(EXP_DIR / "EXP-001.md", tmp_path / "experiments" / "EXP-001.md")
+    _write(tmp_path / "experiments", status="draft")
     rc = main(["--config", cfgp, "backtest", "--experiment", "experiments/EXP-001.md"])
     assert rc == 2 and "only 'approved' runs" in capsys.readouterr().err
 
