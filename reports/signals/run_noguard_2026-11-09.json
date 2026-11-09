@@ -1,0 +1,57 @@
+{
+  "run_id": "20261109T170232Z-b6489b",
+  "started_utc": "2026-11-09T17:02:32+00:00",
+  "git_commit": "3ca2148af523",
+  "git_dirty": true,
+  "config_hash": "9a1b54364150",
+  "data_hash": "1d24e66fd368",
+  "guard": "off",
+  "runs": [
+    {
+      "setup": "orb",
+      "symbol": "GC=F",
+      "params": {
+        "or_minutes": 15,
+        "k": 2.0,
+        "stop_fraction": 1.0,
+        "min_range_atr": 0.1,
+        "max_range_atr": 0.6,
+        "atr_days": 14,
+        "volume_mult": 1.2,
+        "volume_lookback_sessions": 10,
+        "volume_min_sessions": 5,
+        "last_entry": "11:30",
+        "max_signals_per_day": 1
+      },
+      "days": 41,
+      "signals": 27,
+      "files": [
+        "reports/signals/orb_GC_F_noguard_2026-11-09_signals.csv",
+        "reports/signals/orb_GC_F_noguard_2026-11-09_days.csv"
+      ]
+    },
+    {
+      "setup": "orb",
+      "symbol": "GLD",
+      "params": {
+        "or_minutes": 15,
+        "k": 2.0,
+        "stop_fraction": 1.0,
+        "min_range_atr": 0.1,
+        "max_range_atr": 0.6,
+        "atr_days": 14,
+        "volume_mult": 1.2,
+        "volume_lookback_sessions": 10,
+        "volume_min_sessions": 5,
+        "last_entry": "11:30",
+        "max_signals_per_day": 1
+      },
+      "days": 41,
+      "signals": 27,
+      "files": [
+        "reports/signals/orb_GLD_noguard_2026-11-09_signals.csv",
+        "reports/signals/orb_GLD_noguard_2026-11-09_days.csv"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+day,setup,symbol,status,reason,signals,blocked,rejected,reject_reasons,info
+2026-09-11,orb,GC=F,skipped,no session bars,0,0,0,,atr=114.307
+2026-09-14,orb,GC=F,scanned,,0,0,7,volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5 | volume profile has 0 sessions < 5,atr=113.378;or_high=4318.4;or_low=4306.5;or_range=11.8999;range_atr=0.104957
+2026-09-15,orb,GC=F,skipped,range too narrow: 0.087 ATR < 0.1,0,0,0,,atr=115.464;or_high=4334;or_low=4324;or_range=10;range_atr=0.086607
+2026-09-16,orb,GC=F,scanned,,0,0,11,volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5 | volume profile has 2 sessions < 5,atr=112.686;or_high=4395.5;or_low=4381.6;or_range=13.8999;range_atr=0.123351
+2026-09-17,orb,GC=F,scanned,,0,0,3,volume profile has 3 sessions < 5 | volume profile has 3 sessions < 5 | volume profile has 3 sessions < 5,atr=116.05;or_high=4415;or_low=4396.8;or_range=18.2002;range_atr=0.156831
+2026-09-18,orb,GC=F,scanned,,0,0,9,volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5 | volume profile has 4 sessions < 5,atr=119.414;or_high=4406.6;or_low=4390.7;or_range=15.8999;range_atr=0.133149
+2026-09-21,orb,GC=F,scanned,,1,0,2,"short break, volume 0.59x < 1.2x | short break, volume 1.06x < 1.2x",atr=110.457;or_high=4402.5;or_low=4386.8;or_range=15.7002;range_atr=0.142139
+2026-09-22,orb,GC=F,scanned,,1,0,1,"short break, volume 0.71x < 1.2x",atr=109.05;or_high=4380.6;or_low=4365.2;or_range=15.3999;range_atr=0.141219
+2026-09-23,orb,GC=F,scanned,,1,0,0,,atr=105.171;or_high=4350.6;or_low=4323;or_range=27.6001;range_atr=0.26243
+2026-09-24,orb,GC=F,scanned,,1,0,1,"short break, volume 0.82x < 1.2x",atr=103.857;or_high=4312.8;or_low=4302.4;or_range=10.3999;range_atr=0.100137
+2026-09-25,orb,GC=F,scanned,,1,0,0,,atr=98.7071;or_high=4319.8;or_low=4308.6;or_range=11.1997;range_atr=0.113464
+2026-09-28,orb,GC=F,scanned,,1,0,0,,atr=94.1785;or_high=4183.6;or_low=4168;or_range=15.6001;range_atr=0.165644
+2026-09-29,orb,GC=F,scanned,,1,0,3,"long break, volume 0.71x < 1.2x | long break, volume 0.86x < 1.2x | long break, volume 0.53x < 1.2x",atr=99.2;or_high=4195.5;or_low=4184.4;or_range=11.1001;range_atr=0.111896
+2026-09-30,orb,GC=F,scanned,,1,0,6,"short break, volume 1.11x < 1.2x | short break, volume 1.04x < 1.2x | short break, volume 0.82x < 1.2x | short break, volume 0.85x < 1.2x | short break, volume 0.86x < 1.2x | short break, volume 1.08x < 1.2x",atr=97.6285;or_high=4227;or_low=4213.1;or_range=13.8999;range_atr=0.142375
+2026-10-01,orb,GC=F,scanned,,0,0,7,"short break, volume 1.06x < 1.2x | short break, volume 0.88x < 1.2x | short break, volume 0.53x < 1.2x | long break, volume 0.97x < 1.2x | short break, volume 0.96x < 1.2x | short break, volume 0.65x < 1.2x | short break, volume 0.97x < 1.2x",atr=93.8928;or_high=4202.4;or_low=4188.8;or_range=13.6001;range_atr=0.144847
+2026-10-02,orb,GC=F,scanned,,1,0,0,,atr=89.7143;or_high=4231.6;or_low=4212.5;or_range=19.1001;range_atr=0.212899
+2026-10-05,orb,GC=F,scanned,,1,0,3,"short break, volume 0.71x < 1.2x | short break, volume 0.72x < 1.2x | short break, volume 0.45x < 1.2x",atr=88.95;or_high=4182;or_low=4165;or_range=17;range_atr=0.191119
+2026-10-06,orb,GC=F,scanned,,1,0,5,"short break, volume 0.48x < 1.2x | short break, volume 0.80x < 1.2x | short break, volume 0.55x < 1.2x | short break, volume 0.47x < 1.2x | short break, volume 0.90x < 1.2x",atr=88.3714;or_high=4192.9;or_low=4183.2;or_range=9.69971;range_atr=0.109761
+2026-10-07,orb,GC=F,scanned,,1,0,8,"long break, volume 0.86x < 1.2x | long break, volume 0.68x < 1.2x | long break, volume 0.86x < 1.2x | long break, volume 0.42x < 1.2x | long break, volume 0.88x < 1.2x | long break, volume 0.93x < 1.2x | long break, volume 0.51x < 1.2x | long break, volume 0.64x < 1.2x",atr=84.2214;or_high=4120.1;or_low=4108;or_range=12.1001;range_atr=0.14367
+2026-10-08,orb,GC=F,scanned,,1,0,2,"long break, volume 1.08x < 1.2x | long break, volume 0.50x < 1.2x",atr=82.6357;or_high=4154.2;or_low=4144.4;or_range=9.80029;range_atr=0.118596
+2026-10-09,orb,GC=F,scanned,,0,0,1,"short break, volume 0.64x < 1.2x",atr=80.85;or_high=4217.6;or_low=4207.1;or_range=10.5;range_atr=0.12987
+2026-10-12,orb,GC=F,skipped,range too narrow: 0.072 ATR < 0.1,0,0,0,,atr=81.7785;or_high=4199.2;or_low=4193.3;or_range=5.90039;range_atr=0.0721508
+2026-10-13,orb,GC=F,scanned,,1,0,1,"short break, volume 1.13x < 1.2x",atr=80.1857;or_high=4213.5;or_low=4199.6;or_range=13.8999;range_atr=0.173346
+2026-10-14,orb,GC=F,scanned,,1,0,0,,atr=77.2071;or_high=4129.6;or_low=4112;or_range=17.6001;range_atr=0.22796
+2026-10-15,orb,GC=F,scanned,,1,0,0,,atr=79.9785;or_high=4185;or_low=4171.6;or_range=13.3999;range_atr=0.167544
+2026-10-16,orb,GC=F,scanned,,1,0,0,,atr=81.9357;or_high=4200.5;or_low=4177.9;or_range=22.6001;range_atr=0.275827
+2026-10-19,orb,GC=F,scanned,,1,0,1,"short break, volume 1.16x < 1.2x",atr=72.9928;or_high=4186.8;or_low=4169.2;or_range=17.5996;range_atr=0.241114
+2026-10-20,orb,GC=F,scanned,,1,0,0,,atr=71.7571;or_high=4149.8;or_low=4134.7;or_range=15.0996;range_atr=0.210427
+2026-10-21,orb,GC=F,skipped,range too narrow: 0.093 ATR < 0.1,0,0,0,,atr=69.7499;or_high=4157.1;or_low=4150.6;or_range=6.5;range_atr=0.09319
+2026-10-22,orb,GC=F,scanned,,1,0,0,,atr=68.6714;or_high=4096.5;or_low=4074.8;or_range=21.7;range_atr=0.315997
+2026-10-23,orb,GC=F,scanned,,1,0,1,"short break, volume 1.14x < 1.2x",atr=70.2642;or_high=4044;or_low=4035.7;or_range=8.30005;range_atr=0.118126
+2026-10-26,orb,GC=F,scanned,,1,0,1,"short break, volume 0.93x < 1.2x",atr=71.1642;or_high=4023.9;or_low=4013.5;or_range=10.3999;range_atr=0.146139
+2026-10-27,orb,GC=F,scanned,,1,0,0,,atr=69.1214;or_high=4046.4;or_low=4034.6;or_range=11.7998;range_atr=0.170711
+2026-10-28,orb,GC=F,scanned,,0,0,14,"short break, volume 0.36x < 1.2x | short break, volume 0.52x < 1.2x | short break, volume 1.11x < 1.2x | short break, volume 0.53x < 1.2x | short break, volume 0.68x < 1.2x | short break, volume 0.39x < 1.2x | short break, volume 0.85x < 1.2x | short break, volume 0.52x < 1.2x | short break, volume 0.87x < 1.2x | short break, volume 0.29x < 1.2x | short break, volume 0.25x < 1.2x | short break, volume 0.32x < 1.2x | short break, volume 0.56x < 1.2x | short break, volume 0.31x < 1.2x",atr=67.0642;or_high=4065.9;or_low=4058.9;or_range=7;range_atr=0.104378
+2026-10-29,orb,GC=F,scanned,,0,0,0,,atr=68.3285;or_high=4049.3;or_low=4031.6;or_range=17.7;range_atr=0.259042
+2026-10-30,orb,GC=F,scanned,,1,0,0,,atr=67.4571;or_high=3956;or_low=3933.4;or_range=22.6001;range_atr=0.335029
+2026-11-02,orb,GC=F,scanned,,0,0,0,,atr=74.2214;or_high=3976;or_low=3956.8;or_range=19.2;range_atr=0.258685
+2026-11-03,orb,GC=F,skipped,range too narrow: 0.093 ATR < 0.1,0,0,0,,atr=76.1357;or_high=3959.2;or_low=3952.1;or_range=7.09985;range_atr=0.0932526
+2026-11-04,orb,GC=F,scanned,,1,0,1,"short break, volume 1.09x < 1.2x",atr=74.6429;or_high=4062.1;or_low=4042.4;or_range=19.7002;range_atr=0.263926
+2026-11-05,orb,GC=F,scanned,,1,0,0,,atr=79.1571;or_high=4145.3;or_low=4104.8;or_range=40.5;range_atr=0.511641
+2026-11-06,orb,GC=F,scanned,,1,0,15,"long break, volume 1.09x < 1.2x | long break, volume 0.86x < 1.2x | long break, volume 0.72x < 1.2x | long break, volume 1.06x < 1.2x | long break, volume 0.88x < 1.2x | long break, volume 0.54x < 1.2x | long break, volume 0.45x < 1.2x | long break, volume 0.49x < 1.2x | long break, volume 0.68x < 1.2x | long break, volume 0.37x < 1.2x | long break, volume 0.56x < 1.2x | long break, volume 0.32x < 1.2x | long break, volume 0.44x < 1.2x | long break, volume 0.43x < 1.2x | long break, volume 0.68x < 1.2x",atr=81.7214;or_high=4051.3;or_low=4039.3;or_range=12;range_atr=0.14684
