@@ -4,7 +4,7 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stages A–E done (data, calendar, setups, execution/costs/risk, analysis). EXP-001 is drafted and waits for approval; no result on real data yet — see [STATUS.md](STATUS.md).
+**Status:** Stages A–E done (data, calendar, setups, execution/costs/risk, analysis). EXP-001 (in-sample ORB baseline) ran once: INCONCLUSIVE — see [STATUS.md](STATUS.md).
 
 ## Research process
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
@@ -14,7 +14,11 @@ No real money, no live orders, ever.
 - In-sample / locked out-of-sample split; bootstrap confidence intervals; "no edge found" is a valid result.
 
 ## Results
-None yet. Every number in this repository must link to a file produced by its code.
+Every number in this repository must link to a file produced by its code.
+
+- EXP-001, ORB baseline, GC=F in-sample (41 sessions): 26 trades, -0.050 R per trade after
+  costs, 95 % CI [-0.406, 0.333] → **INCONCLUSIVE, no demonstrated edge**
+  ([report](reports/backtest_2026-11-09_EXP-001.md), [experiment](experiments/EXP-001.md)).
 
 ## Reproduce
 ```bash
@@ -28,7 +32,7 @@ uv run paper-lab signals          # enabled setups over the archive -> reports/s
 uv run paper-lab signals --guard off   # same without the news guard, for comparison
 uv run paper-lab costs --synthetic     # cost sensitivity x0/x1/x2 on synthetic data (demo)
 uv run paper-lab backtest --synthetic  # one-page report on synthetic data (demo)
-uv run paper-lab backtest --experiment experiments/EXP-001.md   # real data; only once approved
+uv run paper-lab backtest --experiment experiments/EXP-NNN.md   # real data; approved experiments only
 ```
 
 An experiment runs only with `status: approved`, `approved_by`, `approved_on` and a

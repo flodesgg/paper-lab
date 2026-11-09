@@ -109,3 +109,8 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   robustness condition).
 - 2026-11-09 — Experiment files quote "off": YAML 1.1 reads a bare `off` as false. The loader
   rejects booleans in `news_guard_variants` with an explicit message (bug found by a test).
+- 2026-11-09 — EXP-001 approved by Nick and run once on the in-sample archive: INCONCLUSIVE
+  (`experiments/EXP-001.md`, `reports/backtest_2026-11-09_EXP-001.md`). As pre-registered, ORB
+  parameters stay unchanged and the same rules go into the forward paper loop.
+- 2026-11-09 — `make check` must not be piped into `tail` when its exit code gates a commit:
+  4f8a491 was pushed with one failing test because the pipe hid the failure (fixed in cb57296).
