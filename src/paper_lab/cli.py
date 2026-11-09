@@ -516,8 +516,6 @@ def _cmd_forward(args: argparse.Namespace) -> int:
                 "trades": res.trades,
                 "waiting": ";".join(f"{s.symbol}:{d}" for s in res.symbols for d in s.waiting),
                 "weekly_reports": ";".join(p.name for p in weekly),
-                "committed": "",
-                "pushed": "",
             }
             log_run(cfg.paths.journal / "runs.csv", row)
             for s in res.symbols:

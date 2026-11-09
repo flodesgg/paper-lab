@@ -1,2 +1,2 @@
-run_id,started_utc,as_of_utc,git_commit,strategy_hash,data_hash,fetch_errors,days_processed,trades,waiting,weekly_reports,committed,pushed
-20261109T175158Z-ce5ec8,2026-11-09T17:51:58+00:00,2026-11-09T17:51:58.261726+00:00,03a6a23e01fc,219b8dfb9257,4ccf4d277566,,2,0,,,,
+run_id,started_utc,as_of_utc,git_commit,strategy_hash,data_hash,fetch_errors,days_processed,trades,waiting,weekly_reports
+20261109T175158Z-ce5ec8,2026-11-09T17:51:58+00:00,2026-11-09T17:51:58.261726+00:00,03a6a23e01fc,219b8dfb9257,4ccf4d277566,,2,0,,

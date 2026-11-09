@@ -53,9 +53,7 @@ RUN_COLUMNS = [
     "trades",
     "waiting",
     "weekly_reports",
-    "committed",
-    "pushed",
-]
+]  # commit/push outcome: `git log` and logs/paper_lab.log (the row is written before it)
 
 
 class ForwardBusyError(RuntimeError):
