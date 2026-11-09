@@ -64,7 +64,7 @@ def _write(tmp: Path, **changes: object) -> Path:
 
 
 def test_approval_needs_name_and_date_and_unchanged_config(tmp_path: Path) -> None:
-    exp, _ = load_experiment(_write(tmp_path, status="approved"))
+    exp, _ = load_experiment(_write(tmp_path, status="approved", approved_by="", approved_on=""))
     with pytest.raises(ExperimentError, match="approved_by and approved_on"):
         check_runnable(exp, CFG)
     exp, _ = load_experiment(
