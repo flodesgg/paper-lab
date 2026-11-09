@@ -71,6 +71,7 @@ risk:
   daily_loss_limit_pct: 1.5
   max_trades_per_day: 2
   max_stops_per_day: 3         # "3 stops = day is over"
+  max_notional_multiple: 1.0   # position value <= 1.0 x capital: no leverage (conservative)
 
 calendar:
   # Official release dates, one row per event with its source URL (docs/data_notes.md).
@@ -116,3 +117,37 @@ setups:
       atr_days: 14
       last_entry: "11:30"
       max_signals_per_day: 1
+
+# Execution costs per instrument. Sources and reasoning: docs/cost_model.md (each number is
+# marked `sourced` or `assumption` there). GC=F prices are traded as Micro Gold (MGC, 10 oz):
+# a full 100 oz GC contract cannot be sized to a 0.5% risk budget (decision 2026-11-09).
+# GC costs must never be applied to GLD: each instrument has its own block.
+costs:
+  GC=F:
+    kind: future
+    trade_as: MGC
+    multiplier: 10                 # oz per MGC contract (CME, sourced)
+    tick_size: 0.10                # USD/oz = $1.00 per contract (CME, sourced)
+    commission_per_contract: 0.96  # per side: IBKR 0.25 + COMEX 0.70 + regulatory 0.01 (sourced)
+    half_spread_ticks: 0.5         # assumption: 1-tick spread during the NY session
+    slippage_ticks: 1.0            # assumption: market entry / time exit
+    stop_slippage_ticks: 2.0       # assumption: stop orders fill in moving markets
+  GLD:
+    kind: stock
+    tick_size: 0.01
+    commission_per_share: 0.005    # IBKR Pro Fixed (sourced)
+    commission_min: 1.00           # per order (sourced)
+    commission_max_pct: 1.0        # % of trade value (sourced)
+    sec_fee_rate: 0.0000206        # x value of sales (sourced via IBKR)
+    cat_fee_per_share: 0.000003    # FINRA CAT, per share each side (sourced via IBKR)
+    half_spread_ticks: 0.5         # assumption: 1-cent spread
+    slippage_ticks: 1.0            # assumption
+    stop_slippage_ticks: 2.0       # assumption
+
+# Slippage is higher at the open and on news (spec Stage D). Multipliers apply to the
+# slippage part only (not spread or commission); when both apply, the larger one is used.
+execution:
+  open_minutes: 15                 # first minutes of the session
+  open_slippage_mult: 2.0          # assumption
+  event_minutes: 60                # on morning-release days: first minutes of the session
+  event_slippage_mult: 3.0         # assumption

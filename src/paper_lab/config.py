@@ -10,7 +10,7 @@ import hashlib
 import json
 from datetime import time
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -158,6 +158,44 @@ class RiskConfig(_Strict):
     daily_loss_limit_pct: float = Field(gt=0, le=5.0)
     max_trades_per_day: int = Field(ge=1, le=10)
     max_stops_per_day: int = Field(ge=1, le=10)
+    max_notional_multiple: float = Field(gt=0, le=4.0)
+
+
+class _CostBase(_Strict):
+    tick_size: float = Field(gt=0)
+    half_spread_ticks: float = Field(ge=0)
+    slippage_ticks: float = Field(ge=0)
+    stop_slippage_ticks: float = Field(ge=0)
+
+
+class FutureCosts(_CostBase):
+    kind: Literal["future"]
+    trade_as: str
+    multiplier: float = Field(gt=0)  # units of the quoted price per contract
+    commission_per_contract: float = Field(ge=0)  # USD per side, all fees included
+
+
+class StockCosts(_CostBase):
+    kind: Literal["stock"]
+    commission_per_share: float = Field(ge=0)
+    commission_min: float = Field(ge=0)
+    commission_max_pct: float = Field(ge=0)
+    sec_fee_rate: float = Field(ge=0)  # x USD value of each SALE
+    cat_fee_per_share: float = Field(ge=0)
+
+    @property
+    def multiplier(self) -> float:
+        return 1.0
+
+
+CostConfig = Annotated[FutureCosts | StockCosts, Field(discriminator="kind")]
+
+
+class ExecutionConfig(_Strict):
+    open_minutes: int = Field(ge=0, le=150)
+    open_slippage_mult: float = Field(ge=1)
+    event_minutes: int = Field(ge=0, le=150)
+    event_slippage_mult: float = Field(ge=1)
 
 
 class Config(_Strict):
@@ -172,6 +210,8 @@ class Config(_Strict):
     calendar: CalendarConfig
     news_guard: NewsGuardConfig
     setups: dict[str, SetupConfig]
+    costs: dict[str, CostConfig]
+    execution: ExecutionConfig
 
     @model_validator(mode="after")
     def _one_primary(self) -> Config:
@@ -181,6 +221,8 @@ class Config(_Strict):
         symbols = [i.symbol for i in self.instruments]
         if len(set(symbols)) != len(symbols):
             raise ValueError("instrument symbols must be unique")
+        if set(self.costs) != set(symbols):
+            raise ValueError(f"costs must have exactly one block per instrument {symbols}")
         return self
 
     def instrument(self, symbol: str) -> InstrumentConfig:

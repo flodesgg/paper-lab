@@ -4,7 +4,7 @@ Paper-only research lab that tests whether simple New York–open intraday setup
 (`GC=F`, cross-checked with `GLD`) have a positive expectancy **after realistic costs**.
 No real money, no live orders, ever.
 
-**Status:** Stages A (data), B (calendar) and C (setups: ORB on, momentum off) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
+**Status:** Stages A (data), B (calendar), C (setups: ORB on, momentum off) and D (execution, costs, risk) done. Data is archived daily; no backtests or results yet — see [STATUS.md](STATUS.md).
 
 ## Research process (planned)
 - Data archived daily from day one (`data_archive/`, with SHA-256 manifest), because free intraday history is short.
@@ -26,6 +26,7 @@ uv run paper-lab validate         # writes reports/data_quality_<date>.md
 uv run paper-lab calendar         # checks the event calendar, shows upcoming releases
 uv run paper-lab signals          # enabled setups over the archive -> reports/signals/ (no P&L)
 uv run paper-lab signals --guard off   # same without the news guard, for comparison
+uv run paper-lab costs --synthetic     # cost sensitivity x0/x1/x2 on synthetic data (demo)
 ```
 
 ## Adding a setup

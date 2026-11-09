@@ -69,7 +69,7 @@ def test_long_pullback_to_vwap_hits_target() -> None:
     assert r.info["first_move_pct"] == pytest.approx(1.1)
     o = outcome(r, day)
     assert (o.entry_price, o.exit_reason) == (100.9, "target")
-    assert o.target == pytest.approx(101.9) and o.r_gross == pytest.approx(2.0)
+    assert o.target == pytest.approx(101.9) and o.r_price == pytest.approx(2.0)
 
 
 def test_short_pullback_to_vwap_hits_stop() -> None:
@@ -82,7 +82,7 @@ def test_short_pullback_to_vwap_hits_stop() -> None:
     r = run(mom(), day)
     assert (r.signals[0].side, r.signals[0].stop) == ("short", 99.6)
     o = outcome(r, day)
-    assert (o.exit_reason, o.exit_price) == ("stop", 99.6) and o.r_gross == pytest.approx(-1.0)
+    assert (o.exit_reason, o.exit_price) == ("stop", 99.6) and o.r_price == pytest.approx(-1.0)
 
 
 def test_move_below_threshold_skips_day() -> None:
@@ -119,7 +119,7 @@ def test_same_bar_stop_and_target_counts_as_stop() -> None:
     rows = UP + [PULL_LONG, ("10:35", 100.9, 102.5, 100.0, 101.0, 100)]
     day = bars(DAY, rows)
     o = outcome(run(mom(), day), day)
-    assert (o.exit_reason, o.exit_price) == ("stop", 100.4) and o.r_gross == pytest.approx(-1.0)
+    assert (o.exit_reason, o.exit_price) == ("stop", 100.4) and o.r_price == pytest.approx(-1.0)
 
 
 def test_gap_through_stop_fills_at_open() -> None:
@@ -132,7 +132,7 @@ def test_gap_through_stop_fills_at_open() -> None:
     o = outcome(run(mom(), day), day)
     # R = (100.0 - 100.9) / 0.5 = -1.8
     assert (o.exit_reason, o.exit_price) == ("stop_gap", 100.0)
-    assert o.r_gross == pytest.approx(-1.8)
+    assert o.r_price == pytest.approx(-1.8)
 
 
 def test_ema_anchor_long_signal() -> None:
@@ -194,7 +194,7 @@ def test_half_day_window_unchanged_and_time_exit() -> None:
     o = simulate_trade(r.signals[0], day, w.close_utc, "5m")
     # entry 101.0, exit 11:55 close 101.0, risk 0.6 -> R = 0
     assert (o.exit_reason, o.exit_ts) == ("time", ts(half, "11:55"))
-    assert o.r_gross == pytest.approx(0.0)
+    assert o.r_price == pytest.approx(0.0)
 
 
 def test_stop_buffer_in_atr() -> None:

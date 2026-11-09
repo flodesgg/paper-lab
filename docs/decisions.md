@@ -66,3 +66,22 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   a pre-registered experiment (EXP-001), so the defaults above cannot be tuned on seen results.
 - 2026-11-09 — Sessions whose data ends before the session close (e.g. today while it runs) are left
   out of signal runs. — Otherwise the same command gives a different answer tomorrow.
+- 2026-11-09 — GC=F prices are traded as Micro Gold (MGC, 10 oz) for sizing and costs (chosen by
+  Nick). — A full 100 oz GC contract does not fit a 0.5 % risk budget with typical ORB stops.
+- 2026-11-09 — Commissions from Interactive Brokers' published US pricing (chosen by Nick), read
+  in the browser because the pages block scripts; spread and slippage are assumptions
+  (docs/cost_model.md).
+- 2026-11-09 — Position value capped at 1x capital (`max_notional_multiple: 1.0`, no leverage). —
+  Conservative default; it limits MGC to 2 contracts and GLD to ~260 shares, so the realised risk
+  per trade is often below 0.5 %. R multiples do not depend on it.
+- 2026-11-09 — Size is decided before the fill, from the signal-bar close plus the expected entry
+  cost; the target is k x risk from the ACTUAL fill. A gap at the next open can push the actual
+  risk above the budget; the journal records the actual `risk_usd`.
+- 2026-11-09 — Risk gate per instrument account: one position at a time, max 2 trades/day, 3 stops
+  end the day, no entry once the realised loss reaches 1.5 % or if a stop-out of the new trade
+  would take it beyond 1.5 %.
+- 2026-11-09 — Cost sensitivity on real data runs only behind an experiment file with
+  `Status: approved` (chosen by Nick: no peeking before EXP-001 is approved). Until then
+  `paper-lab costs --synthetic` demonstrates the command on random-walk data.
+- 2026-11-09 — Backtest trades go to `reports/cost_sensitivity/...`; `journal/trades.csv` and
+  `journal/daily.csv` are reserved for the forward paper loop (Stage F), same schema and writer.

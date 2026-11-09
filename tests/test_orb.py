@@ -70,7 +70,7 @@ def test_long_breakout_hits_target() -> None:
     assert o.entry_price == 102.6 and o.entry_ts == ts(DAY, "09:50")
     assert o.target == pytest.approx(109.8)
     assert (o.exit_reason, o.exit_ts) == ("target", ts(DAY, "10:00"))
-    assert o.r_gross == pytest.approx(2.0)
+    assert o.r_price == pytest.approx(2.0)
 
 
 def test_short_breakout_hits_stop() -> None:
@@ -88,7 +88,7 @@ def test_short_breakout_hits_stop() -> None:
     assert (s.side, s.stop) == ("short", 102.0)
     o = outcome(r, day)
     assert (o.exit_reason, o.exit_price) == ("stop", 102.0)
-    assert o.r_gross == pytest.approx(-1.0)
+    assert o.r_price == pytest.approx(-1.0)
 
 
 def test_same_bar_stop_and_target_counts_as_stop() -> None:
@@ -103,7 +103,7 @@ def test_same_bar_stop_and_target_counts_as_stop() -> None:
     )
     o = outcome(run(orb(), day), day)
     assert (o.exit_reason, o.exit_price, o.exit_ts) == ("stop", 99.0, ts(DAY, "09:55"))
-    assert o.r_gross == pytest.approx(-1.0)
+    assert o.r_price == pytest.approx(-1.0)
 
 
 def test_gap_through_stop_fills_at_open_beyond_stop() -> None:
@@ -119,7 +119,7 @@ def test_gap_through_stop_fills_at_open_beyond_stop() -> None:
     o = outcome(run(orb(), day), day)
     # exit at the gap open 97.2, not at 99: R = (97.2 - 102.6) / 3.6 = -1.5
     assert (o.exit_reason, o.exit_price) == ("stop_gap", 97.2)
-    assert o.r_gross == pytest.approx(-1.5)
+    assert o.r_price == pytest.approx(-1.5)
 
 
 def _or_with_range(height: float) -> list[tuple[str, float, float, float, float, int]]:
@@ -293,7 +293,7 @@ def test_time_exit_at_last_session_bar_close() -> None:
     o = outcome(run(orb(), day), day)
     # entry 103.0, exit at the 11:55 bar close 103.0; risk 4.0 -> R = 0
     assert (o.exit_reason, o.exit_ts, o.exit_price) == ("time", ts(DAY, "11:55"), 103.0)
-    assert o.r_gross == pytest.approx(0.0)
+    assert o.r_price == pytest.approx(0.0)
 
 
 def test_entry_gap_beyond_stop_is_not_filled() -> None:

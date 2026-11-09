@@ -7,6 +7,8 @@ Commands
   validate             data-quality report into reports/ (exit 1 if any error)
   calendar             validate the event calendar, show upcoming events
   signals              run enabled setups over the archive -> reports/signals/ (no P&L)
+  costs --synthetic    cost sensitivity (costs x0/x1/x2) on synthetic data (pipeline demo)
+  costs --experiment F same on the real archive, only if experiment file F is approved
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ import logging
 import sys
 from collections import Counter
 from dataclasses import asdict
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -28,7 +31,15 @@ from paper_lab.calendar.sessions import session_window, trading_days
 from paper_lab.config import Config, load_config
 from paper_lab.data.archive import archive_hash, load_archive
 from paper_lab.data.fetch import BarSource, YFinanceSource, run_update
+from paper_lab.data.synthetic import resample_bars, synthetic_bars
 from paper_lab.data.validate import overall_status, validate_series, write_reports
+from paper_lab.execution.backtest import run_backtest
+from paper_lab.execution.sensitivity import (
+    ExperimentNotApprovedError,
+    require_approved,
+    summarize,
+    table,
+)
 from paper_lab.logging_setup import setup_logging
 from paper_lab.runinfo import RunInfo, new_run_info
 from paper_lab.setups.registry import build_all
@@ -233,6 +244,83 @@ def _cmd_signals(args: argparse.Namespace) -> int:
     return 0
 
 
+SYNTH_DAYS = ("2026-06-01", "2026-10-30")
+SYNTH_BASE = {"GC=F": (4000.0, 11), "GLD": (370.0, 12)}
+
+
+def _cmd_costs(args: argparse.Namespace) -> int:
+    cfg, info = _start(args)
+    log = logging.getLogger("paper_lab")
+    if args.experiment is not None:
+        try:
+            require_approved(args.experiment)
+        except ExperimentNotApprovedError as e:
+            print(f"refused: {e}", file=sys.stderr)
+            return 2
+    synthetic = args.synthetic
+    setups = list(build_all(cfg).values())
+    symbols = args.symbols or [i.symbol for i in cfg.instruments]
+    events = load_events(cfg.calendar.events_files)
+    news = NewsGuard(cfg.news_guard, cfg.session, events)
+    guard = news if cfg.news_guard.mode != "off" else None
+    tz = cfg.session.timezone
+    label = "synthetic" if synthetic else Path(args.experiment).stem
+    stamp = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
+    out_dir = cfg.paths.reports / "cost_sensitivity" / f"{label}_{stamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rows: list[dict[str, object]] = []
+    for sym in symbols:
+        inst = cfg.instrument(sym)
+        intervals = sorted({s.interval for s in setups})
+        if synthetic:
+            days = trading_days(cfg.session.exchange_calendar, *map(_date, SYNTH_DAYS))
+            base, seed = SYNTH_BASE.get(sym, (100.0, 13))
+            b5 = synthetic_bars(days, tz, base=base, seed=seed)
+            bars = {
+                iv: b5 if iv == "5m" else resample_bars(b5, iv, tz, cfg.session.start)
+                for iv in intervals
+            }
+            bars_1h = resample_bars(b5, "1h", tz, cfg.session.start)
+            run_days = days[25:]  # the first weeks only build ATR / volume history
+        else:
+            bars = {
+                iv: load_archive(cfg.paths.data_archive, inst.file_stem, iv) for iv in intervals
+            }
+            bars_1h = load_archive(cfg.paths.data_archive, inst.file_stem, "1h")
+            run_days, _ = session_days(bars[intervals[0]], cfg.session, intervals[0])
+        for mult in (0.0, 1.0, 2.0):
+            res = run_backtest(
+                cfg, setups, inst, bars, bars_1h, run_days, guard, news, mult, info.run_id
+            )
+            res.trades.to_csv(out_dir / f"trades_{inst.file_stem}_x{mult:g}.csv", index=False)
+            res.daily.to_csv(out_dir / f"daily_{inst.file_stem}_x{mult:g}.csv", index=False)
+            rows.append({"symbol": sym, "mult": f"{mult:g}", **summarize(res.trades)})
+        span = f"{run_days[0]}..{run_days[-1]}" if run_days else "no days"
+        log.info("costs %s %s %s days=%d", label, sym, span, len(run_days))
+    header = (
+        "SYNTHETIC random-walk data: this demonstrates the pipeline and says NOTHING about gold."
+        if synthetic
+        else f"Real archive, experiment {args.experiment}."
+    )
+    body = table(rows)
+    report = out_dir / "summary.md"
+    report.write_text(
+        f"# Cost sensitivity ({label}, {stamp})\n\n{header}\n\n"
+        f"Setups: {', '.join(s.name for s in setups)}. Run {info.run_id}, commit "
+        f"{info.git_commit}{' (dirty)' if info.git_dirty else ''}, config {info.config_hash}, "
+        f"data {info.data_hash}.\n\n{body}\n\nNo confidence intervals here (Stage E).\n"
+    )
+    (out_dir / "run.json").write_text(json.dumps(info.as_dict() | {"label": label}, indent=2))
+    print(header)
+    print(body)
+    print(f"-> {report}")
+    return 0
+
+
+def _date(s: str) -> date:
+    return date.fromisoformat(s)
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="paper-lab", description="Paper trading research lab")
     p.add_argument("--version", action="version", version=f"paper-lab {__version__}")
@@ -251,6 +339,11 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("signals", help="run enabled setups over the archive (signals only)")
     s.add_argument("--setups", nargs="+", help="subset of enabled setups")
     s.add_argument("--symbols", nargs="+", help="subset of configured symbols")
+    k = sub.add_parser("costs", help="cost sensitivity x0/x1/x2")
+    src = k.add_mutually_exclusive_group(required=True)
+    src.add_argument("--synthetic", action="store_true", help="synthetic data (demo)")
+    src.add_argument("--experiment", type=Path, help="approved experiment file (real data)")
+    k.add_argument("--symbols", nargs="+", help="subset of configured symbols")
     s.add_argument(
         "--guard",
         choices=["config", "off"],
@@ -268,6 +361,7 @@ def main(argv: list[str] | None = None) -> int:
         "validate": _cmd_validate,
         "calendar": _cmd_calendar,
         "signals": _cmd_signals,
+        "costs": _cmd_costs,
     }
     return handlers[args.command](args)
 
