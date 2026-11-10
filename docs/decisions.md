@@ -6,7 +6,8 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   with no backup; numbers "remembered" from it are unverifiable.
 - 2026-11-09 — Python 3.13 via uv, lockfile committed. — Reproducible environment; avoid system Python.
 - 2026-11-09 — Private GitHub repo `paper-lab`, push after every stage. — Backup from day one.
-- 2026-11-09 — Original spec stored in `docs/PAPER_LAB_PROMPT_v2.md`. — The spec is part of the record.
+- 2026-11-09 — The build follows a written specification fixed before Stage 0 (kept outside
+  this repository); section references such as "spec §7" below point to it.
 - 2026-11-09 — Session 09:30–12:00 America/New_York (US equity open). — Chosen by Nick; matches how
   the setups are traded. 08:20 ET (COMEX gold open) is a possible future experiment, not a default.
 - 2026-11-09 — Archive 1m, 5m and 1h bars for GC=F and GLD. — Chosen by Nick. yfinance keeps 1m bars
@@ -142,5 +143,5 @@ Running log. Newest at the bottom. Format: date — decision — reason.
   is no longer committed (`.gitignore`; `git rm --cached`), only `data_archive/MANIFEST.csv`.
   The forward loop's commit paths changed accordingly. The two recorded Yahoo test fixtures
   were replaced with synthetic prices in the same layout (same rows, timestamps and zero-volume
-  pattern); all tests still pass. Older commits still contain the archive and the author's
-  personal email until the history is rewritten. Added README authorship note, MIT LICENSE.
+  pattern); all tests still pass. The git history was rewritten the same day so that no
+  commit contains the archive or a personal email address. Added an MIT LICENSE.

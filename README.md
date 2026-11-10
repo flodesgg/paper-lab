@@ -79,7 +79,7 @@ scripts/agent.sh install | status | uninstall   # launchd scheduler (docs/forwar
 ## Layout
 `src/paper_lab/` code (data, calendar, setups, execution, risk, journal, analysis, live,
 reports) · `tests/` · `config.yaml` (validated) · `experiments/` · `journal/` · `reports/` ·
-`docs/` (decisions, data notes, cost model, interview notes, original specification).
+`docs/` (decisions, data notes, cost model, forward loop).
 
 ## License
 [MIT](LICENSE).

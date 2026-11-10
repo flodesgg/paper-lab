@@ -69,7 +69,8 @@ def test_no_source_or_test_file_is_gitignored() -> None:
         str(p.relative_to(REPO))
         for d in ("src", "tests", "docs")
         for p in (REPO / d).rglob("*")
-        if p.is_file() and "__pycache__" not in p.parts
+        # .DS_Store: Finder metadata, meant to be ignored
+        if p.is_file() and "__pycache__" not in p.parts and p.name != ".DS_Store"
     ]
     out = subprocess.run(
         ["git", "check-ignore", "--no-index", *files], cwd=REPO, capture_output=True, text=True
