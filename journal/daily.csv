@@ -1,3 +1,5 @@
 day_id,run_id,day,symbol,setups,signals,trades,wins,losses,stops,time_exits,r_gross_sum,r_net_sum,pnl_net_usd,halted,comment
-2026-11-09|GC=F,20261109T175158Z-ce5ec8,2026-11-09,GC=F,orb:scanned,0,0,0,0,0,0,0,0,0,,
-2026-11-09|GLD,20261109T175158Z-ce5ec8,2026-11-09,GLD,orb:scanned,0,0,0,0,0,0,0,0,0,,
+2026-11-09|GC=F,20261109T175158Z-ce5ec8,2026-11-09,GC=F,orb:scanned,0,0,0,0,0,0,0.0,0.0,0.0,,
+2026-11-09|GLD,20261109T175158Z-ce5ec8,2026-11-09,GLD,orb:scanned,0,0,0,0,0,0,0.0,0.0,0.0,,
+2026-11-10|GC=F,20261110T174505Z-cccc09,2026-11-10,GC=F,orb:scanned,1,1,1,0,0,1,0.167216,0.150346,46.081,,
+2026-11-10|GLD,20261110T174505Z-cccc09,2026-11-10,GLD,orb:scanned,1,1,1,0,0,1,0.172604,0.154397,77.6385,,
