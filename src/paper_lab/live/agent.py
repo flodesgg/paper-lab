@@ -14,7 +14,8 @@ from datetime import time
 from pathlib import Path
 
 LABEL = "com.paperlab.forward"
-COMMIT_PATHS = ["data_archive", "journal", "reports/weekly_*.md"]
+# raw bars are third-party data and stay local (.gitignore); only their manifest is committed
+COMMIT_PATHS = ["data_archive/MANIFEST.csv", "journal", "reports/weekly_*.md"]
 MAX_FILE_BYTES = 20 * 1024 * 1024
 
 

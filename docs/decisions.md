@@ -138,4 +138,9 @@ Running log. Newest at the bottom. Format: date — decision — reason.
 - 2026-11-09 — Regression test (spec §6): a fixed synthetic archive replayed through the
   forward loop must reproduce `tests/fixtures/expected_forward_trades.csv` (18 trades;
   regenerate deliberately with `PAPER_LAB_REGEN=1` and review the diff).
-
+- 2026-11-10 — Portfolio clean-up: Yahoo Finance bars are third-party data, so the raw archive
+  is no longer committed (`.gitignore`; `git rm --cached`), only `data_archive/MANIFEST.csv`.
+  The forward loop's commit paths changed accordingly. The two recorded Yahoo test fixtures
+  were replaced with synthetic prices in the same layout (same rows, timestamps and zero-volume
+  pattern); all tests still pass. Older commits still contain the archive and the author's
+  personal email until the history is rewritten. Added README authorship note, MIT LICENSE.

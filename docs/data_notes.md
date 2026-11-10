@@ -55,6 +55,10 @@ daily. Missing a month of daily runs loses 1-minute data permanently.
 
 ## Archive policy
 
+- Since 2026-11-10 the raw archive is **not committed** (third-party data); it stays in
+  `data_archive/` on this Mac, ignored by git. Only `MANIFEST.csv` is committed. Back the folder
+  up locally (Time Machine): bars older than Yahoo's history window cannot be re-downloaded.
+
 - `data_archive/YYYY-MM/<symbol>_<interval>.csv.gz`, partitioned by UTC month of bar start,
   written byte-deterministically (gzip mtime 0); unchanged content is never rewritten.
 - **Keep-first:** an archived bar is never overwritten. If Yahoo later reports a different value,

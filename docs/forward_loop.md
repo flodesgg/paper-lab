@@ -5,7 +5,7 @@ archive (from 2026-11-09, the first out-of-sample day) is traded on paper with t
 rules pinned by EXP-001, once, right after it completes. Nothing is sent to any broker.
 
 ## What one run does (`uv run paper-lab forward`)
-1. Fetches new bars into `data_archive/` (same code as `paper-lab fetch --update`). A failed
+1. Fetches new bars into `data_archive/` (local only, ignored by git) (same code as `paper-lab fetch --update`). A failed
    series is logged; the run continues with what is archived and exits 1.
 2. For each instrument, finds the complete sessions since `forward.start` that are not yet in
    `journal/daily.csv`: today after the close, plus any day missed while the Mac was asleep or
@@ -16,7 +16,7 @@ rules pinned by EXP-001, once, right after it completes. Nothing is sent to any 
    A session already in the journal is never recomputed.
 4. Writes `reports/weekly_<last session>.md` for every finished week without a report.
 5. Appends one line to `journal/runs.csv` (run id, commit, strategy/data hash, what happened).
-6. With `--commit --push`: commits only `data_archive/`, `journal/` and `reports/weekly_*.md`
+6. With `--commit --push`: commits only `data_archive/MANIFEST.csv`, `journal/` and `reports/weekly_*.md`
    (pathspec commit; anything else you have staged is left alone; files > 20 MB are refused)
    and pushes. A failed push is logged and retried by the next run's push.
 

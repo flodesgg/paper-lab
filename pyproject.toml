@@ -7,6 +7,7 @@ authors = [
     { name = "Nick", email = "119965654+flodesgg@users.noreply.github.com" }
 ]
 requires-python = ">=3.13"
+license = "MIT"
 dependencies = [
     "exchange-calendars>=4.13.2",
     "matplotlib>=3.11.2",

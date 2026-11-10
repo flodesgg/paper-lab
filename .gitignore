@@ -7,7 +7,11 @@
 /data/*
 !/data/calendar/
 /logs/
-/data_archive/.lock
+# third-party market data (Yahoo Finance) stays on this Mac only; the manifest (row counts,
+# time ranges, SHA-256) is committed so results can be tied to the exact data used
+/data_archive/*
+!/data_archive/.gitkeep
+!/data_archive/MANIFEST.csv
 
 # python / tooling
 .venv/
